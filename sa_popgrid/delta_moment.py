@@ -2,10 +2,10 @@ import os
 import argparse
 import pickle
 import time
+import multiprocessing
 
 import numpy as np
 import pandas as pd
-import multiprocessing
 from SALib.analyze import delta
 from pathos.multiprocessing import ProcessingPool as Pool
 

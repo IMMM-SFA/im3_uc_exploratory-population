@@ -10,6 +10,9 @@ The following code was tested on THECUBE cluster courtesy of the Reed Research G
 This code has a GDAL 2.2.3 dependency.  This was installed using the following using the default compiler `gcc 8.3.0`:
 
 ```shell script
+# change directories into your libs dir; make on if it does not exist
+cd ~/libs
+
 # download GDAL
 wget http://download.osgeo.org/gdal/2.2.3/gdal-2.2.3.tar.gz
 
@@ -55,7 +58,9 @@ In this case `pyenv` is simply the name I have chosen for my virutal environemnt
 
 ### STEP 3:  Install the `sa_popgrid` package and the Required Python Modules
 First activate your Python virtual environment by running:
-`source pyenv/bin/activate`
+```shell script
+source pyenv/bin/activate
+```
 
 Then install the `sa_popgrid` package from GitHub:
 ```shell script
@@ -75,6 +80,16 @@ If no errors return then all is well.  Exit the Python prompt by excuting:
 exit()
 ```
 
-### STEP 4: 
+### STEP 4:  Directory Structure
+I use the following directory structure...
+
+### STEP 5:  Build the Latin Hypercube Sample and Problem Dictionary
+
+```python
+from sa_
+
+
+```
+
 
 
