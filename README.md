@@ -86,7 +86,7 @@ I use the following directory structure...
 ### STEP 5:  Build the Latin Hypercube Sample and Problem Dictionary
 
 ```python
-from sa_
+
 
 
 ```
