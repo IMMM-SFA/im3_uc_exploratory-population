@@ -1,7 +1,7 @@
 import os
 
 
-def run_lhs(output_job_script, sample_list, output_dir='', venv_dir='', walltime='00:10:00'):
+def run_lhs(output_job_script, sample_list, output_dir, venv_dir, walltime='00:10:00'):
     """Submit a SLURM job, or array of jobs, to generate a pickled problem dictionary and a NumPy
     array of samples.
 
@@ -11,7 +11,15 @@ def run_lhs(output_job_script, sample_list, output_dir='', venv_dir='', walltime
     :param sample_list:                         A list of samples desired.  E.g., [20, 50]
     :type sample_list:                          list
 
-    :param
+    :param output_dir:                          Full path to the directory where the outputs will be stored
+    :type output_dir:                           str
+
+    :param venv_dir:                            Full path to your Python virtual environment
+    :type venv_dir:                             str
+
+    :param walltime:                            Time limit for each SLURM job in HH:MM:SS
+    :type walltime:                             str
+
 
     """
 
@@ -32,7 +40,6 @@ def run_lhs(output_job_script, sample_list, output_dir='', venv_dir='', walltime
 
     else:
         sample_string = ",".join(sample_list)
-
 
     slurm = f"""#!/bin/sh
                 #SBATCH --partition=normal
