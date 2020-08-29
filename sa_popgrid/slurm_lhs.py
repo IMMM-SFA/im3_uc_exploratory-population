@@ -1,10 +1,38 @@
 import os
 
 
-def run_lhs(job_script='', sample_string='20,50', output_dir='', venv_dir='', walltime='00:10:00'):
+def run_lhs(output_job_script, sample_list, output_dir='', venv_dir='', walltime='00:10:00'):
+    """Submit a SLURM job, or array of jobs, to generate a pickled problem dictionary and a NumPy
+    array of samples.
 
+    :param output_job_script:                   Full path with file name and extension to the output job script
+    :type output_job_script:                    str
+
+    :param sample_list:                         A list of samples desired.  E.g., [20, 50]
+    :type sample_list:                          list
+
+    :param
+
+    """
+
+    # build strings for shell variables
     array_id_str = '{SLURM_ARRAY_TASK_ID}'
     runtime_str = '{RUNTIME}'
+
+    # build sample string
+    if type(sample_list) != list:
+        raise TypeError(f"`sample_list` must be a list.  Your value:  {sample_list}")
+
+    len_samples = len(sample_list)
+    if len_samples == 0:
+        raise IndexError(f"`sample_list` must at least have one value.  E.g., [20]")
+
+    elif len_samples == 1:
+        sample_string = f"{sample_list[0]}"
+
+    else:
+        sample_string = ",".join(sample_list)
+
 
     slurm = f"""#!/bin/sh
                 #SBATCH --partition=normal
@@ -49,7 +77,7 @@ def run_lhs(job_script='', sample_string='20,50', output_dir='', venv_dir='', wa
                 
                 echo "Run completed in ${runtime_str} seconds."""
 
-    with open(job_script, 'w') as out:
+    with open(output_job_script, 'w') as out:
         out.write(slurm)
 
-    os.system(f"sbatch --array={sample_string} {job_script}")
+    os.system(f"sbatch --array={sample_string} {output_job_script}")
