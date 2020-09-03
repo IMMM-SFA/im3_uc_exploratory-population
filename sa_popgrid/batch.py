@@ -18,6 +18,8 @@ if __name__ == '__main__':
                         help='directory where the outputs will be written')
     parser.add_argument('sample_index', metavar='idx', type=int, help='index number of the sample')
     parser.add_argument('end_yr', metavar='eyr', type=int, help='four digit end year')
+    parser.add_argument('state_name', metavar='sn', type=str, help='state name all lower case and underscore separated')
+    parser.add_argument('ssp', metavar='ssp', type=str, help='Shared Socioeconomic Pathway abbreviation (e.g., SSP2)')
 
     args = parser.parse_args()
 
@@ -32,20 +34,20 @@ if __name__ == '__main__':
     param_name_list = lhs_problem.get('names')
 
     # run the model for the target sample
-    run = Model(grid_coordinates_file=os.path.join(args.input_directory, 'vermont_coordinates.csv'),
-                historical_rural_pop_raster=os.path.join(args.input_directory, 'vermont_rural_2010_1km.tif'),
-                historical_urban_pop_raster=os.path.join(args.input_directory, 'vermont_urban_2010_1km.tif'),
-                historical_suitability_raster=os.path.join(args.input_directory, 'vermont_mask_short_term.tif'),
-                projected_population_file=os.path.join(args.input_directory, 'vermont_SSP2_popproj.csv'),
-                one_dimension_indices_file=os.path.join(args.input_directory, 'vermont_within_indices.txt'),
+    run = Model(grid_coordinates_file=os.path.join(args.input_directory, f'{args.state_name}_coordinates.csv'),
+                historical_rural_pop_raster=os.path.join(args.input_directory, f'{args.state_name}_rural_2010_1km.tif'),
+                historical_urban_pop_raster=os.path.join(args.input_directory, f'{args.state_name}_urban_2010_1km.tif'),
+                historical_suitability_raster=os.path.join(args.input_directory, f'{args.state_name}_mask_short_term.tif'),
+                projected_population_file=os.path.join(args.input_directory, f'{args.state_name}_{args.ssp}_popproj.csv'),
+                one_dimension_indices_file=os.path.join(args.input_directory, f'{args.state_name}_within_indices.txt'),
                 output_directory=args.output_directory,
                 alpha_urban=lhs_sample[param_name_list.index('alpha_urban')],
                 alpha_rural=lhs_sample[param_name_list.index('alpha_rural')],
                 beta_urban=lhs_sample[param_name_list.index('beta_urban')],
                 beta_rural=lhs_sample[param_name_list.index('beta_rural')],
                 kernel_distance_meters=lhs_sample[param_name_list.index('kernel_distance_meters')],
-                scenario='SSP2',  # shared socioeconomic pathway abbreviation
-                state_name='vermont',
+                scenario=args.ssp,  # shared socioeconomic pathway abbreviation
+                state_name=args.state_name,
                 historic_base_year=2010,
                 projection_start_year=2020,
                 projection_end_year=args.end_yr,
