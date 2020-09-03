@@ -56,14 +56,14 @@ def run_batch(output_job_script, n_samples, input_directory, sample_directory, o
                 STARTTIME=`date +%s`
 
                 # execute Python script
-                python3 -c 'from sa_popgrid.batch import main; main({n_samples}, {input_directory}, {sample_directory}, {output_directory}, {sample_index}, {end_yr}, {state_name}, {ssp})'
+                python3 -c "from sa_popgrid.batch import main; main({n_samples}, {input_directory}, {sample_directory}, {output_directory}, {sample_index}, {end_yr}, {state_name}, {ssp})"
 
                 ENDTIME=`date +%s`
                 RUNTIME=$((ENDTIME-STARTTIME))
 
-                echo "Run completed in ${runtime_str} seconds."""
+                echo "Run completed in ${runtime_str} seconds." """
 
     with open(output_job_script, 'w') as out:
         out.write(slurm)
 
-    os.system(f"sbatch --array=0-{n_samples}%{max_jobs} {output_job_script}")
+    os.system(f"sbatch --array=0-{n_samples-1}%{max_jobs} {output_job_script}")
