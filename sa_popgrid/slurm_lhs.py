@@ -37,6 +37,8 @@ def run_lhs(output_job_script, samples, output_dir, venv_dir, alpha_urban_upper=
     >>> # directory to store the output files in
     >>> output_dir = '/home/fs02/pmr82_0001/spec994/projects/population/outputs/lhs'
     >>>
+    >>> # my Python virtual environemnt
+    >>> venv_dir = '/home/fs02/pmr82_0001/spec994/pyenv'
     >>>
     >>> # submit the SLURM job
     >>> sa_popgrid.run_lhs(output_job_script,
@@ -59,7 +61,7 @@ def run_lhs(output_job_script, samples, output_dir, venv_dir, alpha_urban_upper=
 
     # build strings for shell variables
     array_id_str = '${SLURM_ARRAY_TASK_ID}'
-    runtime_str = '{RUNTIME}'
+    runtime_str = '${RUNTIME}'
     first_param = '${1}'
 
     # build sample string
