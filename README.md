@@ -116,7 +116,7 @@ sa_popgrid.run_lhs(output_job_script,
                     beta_urban_lower=-0.5,
                     beta_rural_upper=2.0,
                     beta_rural_lower=-0.5,
-                    kernel_density_lower=100000,
+                    kernel_density_lower=50000,
                     kernel_density_upper=100000,
                     walltime='00:10:00')
 ```
