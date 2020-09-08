@@ -9,7 +9,8 @@ def build_sbatch_call(output_job_script, samples):
     :param samples:                             An integer or list of samples desired.  E.g., 1000 or [20, 50]
     :type samples:                              integer, list
 
-    :return:                                    sbatch submission string
+    :return:                                    [0] sbatch submission string,
+                                                [1] type of samples variable
 
     """
 
@@ -34,4 +35,4 @@ def build_sbatch_call(output_job_script, samples):
     else:
         sbatch_call = f"sbatch  --array={samples} {output_job_script}"
 
-    return sbatch_call
+    return sbatch_call, type_sample_list

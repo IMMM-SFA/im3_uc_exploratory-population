@@ -61,16 +61,20 @@ def run_lhs(output_job_script, samples, output_dir, venv_dir, alpha_urban_upper=
 
     """
 
+    # build sbatch submission string
+    sbatch_call, type_sample_list = utils.build_sbatch_call(output_job_script, samples)
+
     # build strings for shell variables
     runtime_str = '${RUNTIME}'
-    array_id_str = '${SLURM_ARRAY_TASK_ID}'
-    first_param = '${1}'
 
-    # build sbatch submission string
-    sbatch_call = utils.build_sbatch_call(output_job_script, samples)
+    # choose job type
+    if type_sample_list == int:
+        array_id_str = '${1}'
+    else:
+        array_id_str = '${SLURM_ARRAY_TASK_ID}'
 
     # build slurm script
-    slurm_array = f"""#!/bin/sh
+    slurm = f"""#!/bin/sh
                 #SBATCH --partition=normal
                 #SBATCH --nodes=1
                 #SBATCH --ntasks=1
@@ -109,47 +113,6 @@ def run_lhs(output_job_script, samples, output_dir, venv_dir, alpha_urban_upper=
                 RUNTIME=$((ENDTIME-STARTTIME))
                 
                 echo "Run completed in {runtime_str} seconds." """
-
-    slurm_job = f"""#!/bin/sh
-                #SBATCH --partition=normal
-                #SBATCH --nodes=1
-                #SBATCH --ntasks=1
-                #SBATCH --time={walltime}
-                #SBATCH --job-name=lhs
-                #SBATCH --output=slurm_lhs_%a.out
-
-                # README -----------------------------------------------------------------------
-                #
-                # This script will launch SLURM tasks that will execute lhs.py to create
-                # samples and a problem dictionary for each array value passed.
-                #
-                # To execute this script to create a sample set for 1000 samples execute the following:
-                #
-                # `sbatch run_lhs.sh 1000`
-                #
-                # ------------------------------------------------------------------------------
-
-                # ensure we are pointing to GDAL libs correctly
-                source ~/.bash_profile
-
-                # activate Python virtual environment
-                source {venv_dir}/bin/activate
-
-                STARTTIME=`date +%s`
-
-                # execute Python script
-                python3 -c "from sa_popgrid.lhs import main; main({first_param}, '{output_dir}', {alpha_urban_upper}, {alpha_urban_lower}, {alpha_rural_upper}, {alpha_rural_lower}, {beta_urban_upper}, {beta_urban_lower}, {beta_rural_upper}, {beta_rural_lower}, {kernel_density_lower}, {kernel_density_upper})"
-
-                ENDTIME=`date +%s`
-                RUNTIME=$((ENDTIME-STARTTIME))
-
-                echo "Run completed in {runtime_str} seconds." """
-
-    # choose job type
-    if type_sample_list == int:
-        slurm = slurm_job
-    else:
-        slurm = slurm_array
 
     # write job file
     with open(output_job_script, 'w') as out:
