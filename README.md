@@ -80,16 +80,54 @@ If no errors return then all is well.  Exit the Python prompt by excuting:
 exit()
 ```
 
-### STEP 4:  Directory Structure
-I use the following directory structure...
+### STEP 4:  Build the Latin Hypercube Sample and Problem Dictionary
 
-### STEP 5:  Build the Latin Hypercube Sample and Problem Dictionary
+```python
+# This script generates a sample set of 1000 using LHS 
+#
+# To run:  
+# 1.  Activate your Python virtual environment containing the `sa_popgrid` package
+# 2.  Execute this script by running:  `python generate_lhs_sample_1000.py`
+
+import sa_popgrid
+
+# where to write the job script
+output_job_script = '/home/fs02/pmr82_0001/spec994/projects/population/code/lhs_delta'
+
+# run only one sample
+sample_list = 1000
+
+# directory to store the output files in
+output_dir = '/home/fs02/pmr82_0001/spec994/projects/population/outputs/lhs'
+
+# my Python virtual environemnt
+venv_dir = '/home/fs02/pmr82_0001/spec994/pyenv'
+
+# submit the SLURM job
+sa_popgrid.run_lhs(output_job_script,
+                    sample_list,
+                    output_dir,
+                    venv_dir,
+                    alpha_urban_upper=2.0,
+                    alpha_urban_lower=-2.0,
+                    alpha_rural_upper=2.0,
+                    alpha_rural_lower=-2.0,
+                    beta_urban_upper=2.0,
+                    beta_urban_lower=-0.5,
+                    beta_rural_upper=2.0,
+                    beta_rural_lower=-0.5,
+                    kernel_density_lower=100000,
+                    kernel_density_upper=100000,
+                    walltime='00:10:00')
+```
+
+### STEP 5:  Run model batch runs for each sample
 
 ```python
 
 
-
 ```
+
 
 
 
