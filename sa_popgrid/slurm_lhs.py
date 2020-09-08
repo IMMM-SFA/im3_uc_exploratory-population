@@ -1,5 +1,7 @@
 import os
 
+import sa_popgrid.utils as utils
+
 
 def run_lhs(output_job_script, samples, output_dir, venv_dir, alpha_urban_upper=2.0, alpha_urban_lower=-2.0,
             alpha_rural_upper=2.0, alpha_rural_lower=-2.0, beta_urban_upper=2.0, beta_urban_lower=-2.0,
@@ -60,32 +62,14 @@ def run_lhs(output_job_script, samples, output_dir, venv_dir, alpha_urban_upper=
     """
 
     # build strings for shell variables
-    array_id_str = '${SLURM_ARRAY_TASK_ID}'
     runtime_str = '${RUNTIME}'
+    array_id_str = '${SLURM_ARRAY_TASK_ID}'
     first_param = '${1}'
 
-    # build sample string
-    type_sample_list = type(samples)
-    if type_sample_list == int:
+    # build sbatch submission string
+    sbatch_call = utils.build_sbatch_call(output_job_script, samples)
 
-        sbatch_call = f"sbatch {output_job_script} {samples}"
-
-    elif type_sample_list == list:
-        len_samples = len(samples)
-
-        if len_samples == 0:
-            raise IndexError(f"`sample_list` must at least have one value.  E.g., [20]")
-
-        elif len_samples == 1:
-            sbatch_call = f"sbatch  {output_job_script} {samples[0]}"
-
-        else:
-            sample_string = ",".join(samples)
-            sbatch_call = f"sbatch  --array={sample_string} {output_job_script}"
-
-    else:
-        sbatch_call = f"sbatch  --array={samples} {output_job_script}"
-
+    # build slurm script
     slurm_array = f"""#!/bin/sh
                 #SBATCH --partition=normal
                 #SBATCH --nodes=1
