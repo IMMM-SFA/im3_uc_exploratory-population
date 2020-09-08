@@ -47,20 +47,23 @@ def run_batch(output_job_script, n_samples, input_directory, sample_directory, o
     >>> sample_directory = '/home/fs02/pmr82_0001/spec994/projects/population/outputs/lhs'
     >>>
     >>> # directory to store the output files in
-    >>> output_dir = '/home/fs02/pmr82_0001/spec994/projects/population/outputs/batch'
+    >>> output_directory = '/home/fs02/pmr82_0001/spec994/projects/population/outputs/batch'
     >>>
     >>> # my Python virtual environemnt
     >>> venv_dir = '/home/fs02/pmr82_0001/spec994/pyenv'
     >>>
     >>> # submit the SLURM job
-    >>> sa_popgrid.run_batch(n_samples,
+    >>> sa_popgrid.run_batch(output_job_script,
+    >>>                         n_samples,
     >>>                         input_directory,
     >>>                         sample_directory,
     >>>                         output_directory,
-    >>>                         sample_index,
     >>>                         end_yr,
     >>>                         state_name,
-    >>>                         ssp)
+    >>>                         ssp,
+    >>>                         venv_dir,
+    >>>                         walltime='01:00:00',
+    >>>                         max_jobs=15)
 
     """
 

@@ -82,6 +82,7 @@ exit()
 
 ### STEP 4:  Build the Latin Hypercube Sample and Problem Dictionary
 
+Create a script named:  `generate_lhs_sample_1000.py` that contains:
 ```python
 # This script generates a sample set of 1000 using LHS 
 #
@@ -121,11 +122,21 @@ sa_popgrid.run_lhs(output_job_script,
                     walltime='00:10:00')
 ```
 
-### STEP 5:  Run model batch runs for each sample
+Run this using the following command after your Python virtual environment has been loaded:
+```python
+python generate_lhs_sample_1000.py
+```
+
+### STEP 5:  Run model batch runs for each sample, ssp, state, and year
 
 ```python
 
 
+```
+
+Run this using the following command after your Python virtual environment has been loaded:
+```python
+python generate_lhs_sample_1000.py
 ```
 
 
