@@ -2,7 +2,8 @@ import os
 
 
 def run_batch(output_job_script, n_samples, input_directory, sample_directory, output_directory, hist_yr, start_yr,
-              end_yr, state_name, ssp, venv_dir, walltime='01:00:00', max_jobs=15, submit_job=True):
+              end_yr, state_name, ssp, venv_dir, walltime='01:00:00', max_jobs=15, submit_job=True, partition='normal',
+              account_name=''):
     """This script will launch SLURM tasks that will execute batch.py to create run outputs for each
     sample and problem dictionary.
 
@@ -21,63 +22,24 @@ def run_batch(output_job_script, n_samples, input_directory, sample_directory, o
     :param walltime:                            Time limit for each SLURM job in HH:MM:SS
     :type walltime:                             str
 
-    EXAMPLE:
-
-    >>> import sa_popgrid
-    >>>
-    >>> # use the 1000 sample set that has been previously generated
-    >>> n_samples = 1000
-    >>>
-    >>> # last year to process
-    >>> end_yr = 2020
-    >>>
-    >>> # name of target state all lower case and connected with an underscore
-    >>> state_name = 'new_york'
-    >>>
-    >>> # shared socioeconomic pathway all upper case no spaces
-    >>> ssp = 'SSP2'
-    >>>
-    >>> # where to write the job script
-    >>> output_job_script = f'/home/fs02/pmr82_0001/spec994/projects/population/code/lhs_delta/batch_lhs_ssp-{ssp}_state-{state_name}_yr-{end_yr}_sample-{n_samples}.sh'
-    >>>
-    >>> # directory containing the input data for the population_gravity model
-    >>> input_directory = f'/home/fs02/pmr82_0001/spec994/projects/population/incoming/zoraghein-oneill_population_gravity_inputs_outputs/{state_name}/inputs'
-    >>>
-    >>> # directory containing the LHS sample and problem dictionary
-    >>> sample_directory = '/home/fs02/pmr82_0001/spec994/projects/population/outputs/lhs'
-    >>>
-    >>> # directory to store the output files in
-    >>> output_directory = '/home/fs02/pmr82_0001/spec994/projects/population/outputs/batch'
-    >>>
-    >>> # my Python virtual environemnt
-    >>> venv_dir = '/home/fs02/pmr82_0001/spec994/pyenv'
-    >>>
-    >>> # submit the SLURM job
-    >>> sa_popgrid.run_batch(output_job_script,
-    >>>                         n_samples,
-    >>>                         input_directory,
-    >>>                         sample_directory,
-    >>>                         output_directory,
-    >>>                         end_yr,
-    >>>                         state_name,
-    >>>                         ssp,
-    >>>                         venv_dir,
-    >>>                         walltime='01:00:00',
-    >>>                         max_jobs=15)
-
     """
 
     # build strings for shell variables
     runtime_str = '{RUNTIME}'
     sample_index = '${SLURM_ARRAY_TASK_ID}'
 
+    if len(account_name) > 0:
+        account = f'#SBATCH -A {account_name}'
+    else:
+        account = ''
+
     slurm = f"""#!/bin/sh
-                #SBATCH --partition=normal
+                #SBATCH --partition={partition}
                 #SBATCH --nodes=1
-                #SBATCH --ntasks=1
                 #SBATCH --time={walltime}
                 #SBATCH --job-name=batch
                 #SBATCH --output=slurm_batch_ssp-{ssp}_state-{state_name}_yr-{end_yr}_sample-{sample_index}_job-%a.out
+                {account}
 
                 # README -----------------------------------------------------------------------
                 #
