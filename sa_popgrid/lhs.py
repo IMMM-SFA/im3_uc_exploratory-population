@@ -1,12 +1,12 @@
 import argparse
 import os
 
-from population_gravity.sensitivity import Lhs
+from sa_popgrid.sensitivity import Lhs
 
 
 def main(n_samples, out_directory, alpha_urban_upper=2.0, alpha_urban_lower=-2.0, alpha_rural_upper=2.0,
          alpha_rural_lower=-2.0, beta_urban_upper=2.0, beta_urban_lower=-2.0, beta_rural_upper=2.0,
-         beta_rural_lower=-2.0, kernel_density_lower=50000, kernel_density_upper=100000):
+         beta_rural_lower=-2.0, kernel_density_lower=50000, kernel_density_upper=150000):
 
     # generate latin hypercube sample
     lhs = Lhs(alpha_urban_bounds=[alpha_urban_lower, alpha_urban_upper],

@@ -6,7 +6,7 @@ import sa_popgrid.utils as utils
 def run_lhs(output_job_script, samples, output_dir, venv_dir, alpha_urban_upper=2.0, alpha_urban_lower=-2.0,
             alpha_rural_upper=2.0, alpha_rural_lower=-2.0, beta_urban_upper=2.0, beta_urban_lower=-2.0,
             beta_rural_upper=2.0, beta_rural_lower=-2.0, kernel_density_lower=50000, kernel_density_upper=100000,
-            walltime='00:10:00'):
+            walltime='00:10:00', submit_job=True):
     """Submit a SLURM job, or array of jobs, to generate a pickled problem dictionary and a NumPy
     array of samples.
 
@@ -56,7 +56,7 @@ def run_lhs(output_job_script, samples, output_dir, venv_dir, alpha_urban_upper=
     >>>                     beta_rural_upper=2.0,
     >>>                     beta_rural_lower=-2.0,
     >>>                     kernel_density_lower=50000,
-    >>>                     kernel_density_upper=100000,
+    >>>                     kernel_density_upper=150000,
     >>>                     walltime='00:10:00')
 
     """
@@ -118,5 +118,5 @@ def run_lhs(output_job_script, samples, output_dir, venv_dir, alpha_urban_upper=
     with open(output_job_script, 'w') as out:
         out.write(slurm)
 
-    # submit job
-    os.system(sbatch_call)
+    if submit_job:
+        os.system(sbatch_call)
