@@ -73,4 +73,7 @@ def run_batch(output_job_script, n_samples, input_directory, sample_directory, o
         out.write(slurm)
 
     if submit_job:
-        os.system(f"sbatch --array=0-{n_samples-1}%{max_jobs} {output_job_script}")
+        cmd = f"sbatch --array=0-{n_samples-1}%{max_jobs} {output_job_script}"
+        print(cmd)
+
+        os.system(cmd)
