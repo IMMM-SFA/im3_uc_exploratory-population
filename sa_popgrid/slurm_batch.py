@@ -2,8 +2,8 @@ import os
 
 
 def run_batch(output_job_script, n_samples, input_directory, sample_directory, output_directory, hist_yr, start_yr,
-              end_yr, state_name, ssp, venv_dir, walltime='01:00:00', max_jobs=15, submit_job=True, partition='normal',
-              account_name=''):
+              end_yr, state_name, ssp, venv_dir, walltime='01:00:00', submit_job=True, partition='normal',
+              account_name='', max_jobs=None):
     """This script will launch SLURM tasks that will execute batch.py to create run outputs for each
     sample and problem dictionary.
 
@@ -27,6 +27,11 @@ def run_batch(output_job_script, n_samples, input_directory, sample_directory, o
     # build strings for shell variables
     runtime_str = '{RUNTIME}'
     sample_index = '${SLURM_ARRAY_TASK_ID}'
+
+    if max_jobs is None:
+        job_limit = ''
+    else:
+        job_limit = f'%{max_jobs}'
 
     if len(account_name) > 0:
         account = f'#SBATCH -A {account_name}'
@@ -73,7 +78,7 @@ def run_batch(output_job_script, n_samples, input_directory, sample_directory, o
         out.write(slurm)
 
     if submit_job:
-        cmd = f"sbatch --array=0-{n_samples-1}%{max_jobs} {output_job_script}"
+        cmd = f"sbatch --array=0-{n_samples-1}{job_limit} {output_job_script}"
         print(cmd)
 
         os.system(cmd)
