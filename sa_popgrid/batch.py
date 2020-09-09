@@ -6,7 +6,8 @@ import numpy as np
 from population_gravity import Model
 
 
-def main(n_samples, input_directory, sample_directory, output_directory, sample_index, end_yr, state_name, ssp):
+def main(n_samples, input_directory, sample_directory, output_directory, sample_index, hist_yr, start_yr,
+         end_yr, state_name, ssp, time_step=10):
     """Create run outputs for each sample and problem dictionary.
 
     :param n_samples:
@@ -33,8 +34,8 @@ def main(n_samples, input_directory, sample_directory, output_directory, sample_
 
     # run the model for the target sample
     run = Model(grid_coordinates_file=os.path.join(input_directory, f'{state_name}_coordinates.csv'),
-                historical_rural_pop_raster=os.path.join(input_directory, f'{state_name}_rural_2010_1km.tif'),
-                historical_urban_pop_raster=os.path.join(input_directory, f'{state_name}_urban_2010_1km.tif'),
+                historical_rural_pop_raster=os.path.join(input_directory, f'{state_name}_rural_{hist_yr}_1km.tif'),
+                historical_urban_pop_raster=os.path.join(input_directory, f'{state_name}_urban_{hist_yr}_1km.tif'),
                 historical_suitability_raster=os.path.join(input_directory, f'{state_name}_mask_short_term.tif'),
                 projected_population_file=os.path.join(input_directory, f'{state_name}_{ssp}_popproj.csv'),
                 one_dimension_indices_file=os.path.join(input_directory, f'{state_name}_within_indices.txt'),
@@ -46,10 +47,10 @@ def main(n_samples, input_directory, sample_directory, output_directory, sample_
                 kernel_distance_meters=lhs_sample[param_name_list.index('kernel_distance_meters')],
                 scenario=ssp,  # shared socioeconomic pathway abbreviation
                 state_name=state_name,
-                historic_base_year=2010,
-                projection_start_year=2020,
+                historic_base_year=hist_yr,
+                projection_start_year=start_yr,
                 projection_end_year=end_yr,
-                time_step=10,
+                time_step=time_step,
                 write_raster=False,
                 write_array1d=True,
                 write_array2d=False,
@@ -67,13 +68,12 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description='Process some integers.')
     parser.add_argument('n_samples', metavar='n', type=int, help='an integer for the number of samples')
-    parser.add_argument('input_directory', metavar='indir', type=str,
-                        help='directory where the population model inputs are kept')
-    parser.add_argument('sample_directory', metavar='sampdir', type=str,
-                        help='directory where the sample and problem files are kept')
-    parser.add_argument('output_directory', metavar='outdir', type=str,
-                        help='directory where the outputs will be written')
+    parser.add_argument('input_directory', metavar='indir', type=str, help='directory where the population model inputs are kept')
+    parser.add_argument('sample_directory', metavar='sampdir', type=str, help='directory where the sample and problem files are kept')
+    parser.add_argument('output_directory', metavar='outdir', type=str, help='directory where the outputs will be written')
     parser.add_argument('sample_index', metavar='idx', type=int, help='index number of the sample')
+    parser.add_argument('hist_yr', metavar='hyr', type=int, help='four digit historic reference year')
+    parser.add_argument('start_yr', metavar='syr', type=int, help='four digit start year')
     parser.add_argument('end_yr', metavar='eyr', type=int, help='four digit end year')
     parser.add_argument('state_name', metavar='sn', type=str, help='state name all lower case and underscore separated')
     parser.add_argument('ssp', metavar='ssp', type=str, help='Shared Socioeconomic Pathway abbreviation (e.g., SSP2)')
@@ -85,6 +85,8 @@ if __name__ == '__main__':
          args.sample_directory,
          args.output_directory,
          args.sample_index,
+         args.hist_yr,
+         args.start_yr,
          args.end_yr,
          args.state_name,
          args.ssp)

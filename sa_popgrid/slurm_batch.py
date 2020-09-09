@@ -1,8 +1,8 @@
 import os
 
 
-def run_batch(output_job_script, n_samples, input_directory, sample_directory, output_directory, end_yr,
-              state_name, ssp, venv_dir, walltime='01:0:00', max_jobs=15, submit_job=True):
+def run_batch(output_job_script, n_samples, input_directory, sample_directory, output_directory, hist_yr, start_yr,
+              end_yr, state_name, ssp, venv_dir, walltime='01:00:00', max_jobs=15, submit_job=True):
     """This script will launch SLURM tasks that will execute batch.py to create run outputs for each
     sample and problem dictionary.
 
@@ -100,7 +100,7 @@ def run_batch(output_job_script, n_samples, input_directory, sample_directory, o
                 STARTTIME=`date +%s`
 
                 # execute Python script
-                python3 -c "from sa_popgrid.batch import main; main({n_samples}, '{input_directory}', '{sample_directory}', '{output_directory}', {sample_index}, {end_yr}, '{state_name}', '{ssp}')"
+                python3 -c "from sa_popgrid.batch import main; main({n_samples}, '{input_directory}', '{sample_directory}', '{output_directory}', {sample_index}, {hist_yr}, {start_yr}, {end_yr}, '{state_name}', '{ssp}')"
 
                 ENDTIME=`date +%s`
                 RUNTIME=$((ENDTIME-STARTTIME))
