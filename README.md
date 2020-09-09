@@ -118,7 +118,7 @@ sa_popgrid.run_lhs(output_job_script,
                     beta_rural_upper=2.0,
                     beta_rural_lower=-0.5,
                     kernel_density_lower=50000,
-                    kernel_density_upper=100000,
+                    kernel_density_upper=150000,
                     walltime='00:10:00')
 ```
 
@@ -129,16 +129,67 @@ python generate_lhs_sample_1000.py
 
 ### STEP 5:  Run model batch runs for each sample, ssp, state, and year
 
+Create a script named:  `run_batch.py` that contains:
 ```python
+# This script generates a batch run of all samples for a ssp, state, and year
+#
+# To run:
+# 1.  Activate your Python virtual environment containing the `sa_popgrid` package
+# 2.  Execute this script by running:  `python run_batch.py`
 
+import sa_popgrid
 
+# use the 1000 sample set that has been previously generated
+n_samples = 1000
+
+# last year to process
+end_yr = 2020
+
+# name of target state all lower case and connected with an underscore
+state_name = 'new_york'
+
+# shared socioeconomic pathway all upper case no spaces
+ssp = 'SSP2'
+
+# where to write the job script
+output_job_script = f'/home/fs02/pmr82_0001/spec994/projects/population/code/lhs_delta/batch_lhs_ssp-{ssp}_state-{state_name}_yr-{end_yr}_sample-{n_samples}.sh'
+
+# directory containing the input data for the population_gravity model
+input_directory = f'/home/fs02/pmr82_0001/spec994/projects/population/incoming/zoraghein-oneill_population_gravity_inputs_outputs/{state_name}/inputs'
+
+# directory containing the LHS sample and problem dictionary
+sample_directory = '/home/fs02/pmr82_0001/spec994/projects/population/outputs/lhs'
+
+# directory to store the output files in
+output_directory = '/home/fs02/pmr82_0001/spec994/projects/population/outputs/batch'
+
+# my Python virtual environemnt
+venv_dir = '/home/fs02/pmr82_0001/spec994/pyenv'
+
+# submit the SLURM job
+sa_popgrid.run_batch(output_job_script,
+                        n_samples,
+                        input_directory,
+                        sample_directory,
+                        output_directory,
+                        end_yr,
+                        state_name,
+                        ssp,
+                        venv_dir,
+                        walltime='01:00:00',
+                        max_jobs=15)
 ```
 
 Run this using the following command after your Python virtual environment has been loaded:
 ```python
-python generate_lhs_sample_1000.py
+run_batch.py
 ```
 
+### STEP 6:  Run SA
+
+```python
+
+```
 
 
 
