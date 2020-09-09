@@ -2,7 +2,7 @@ import os
 
 
 def run_batch(output_job_script, n_samples, input_directory, sample_directory, output_directory, end_yr,
-              state_name, ssp, venv_dir, walltime='01:0:00', max_jobs=15):
+              state_name, ssp, venv_dir, walltime='01:0:00', max_jobs=15, submit_job=True):
     """This script will launch SLURM tasks that will execute batch.py to create run outputs for each
     sample and problem dictionary.
 
@@ -110,4 +110,5 @@ def run_batch(output_job_script, n_samples, input_directory, sample_directory, o
     with open(output_job_script, 'w') as out:
         out.write(slurm)
 
-    os.system(f"sbatch --array=0-{n_samples-1}%{max_jobs} {output_job_script}")
+    if submit_job:
+        os.system(f"sbatch --array=0-{n_samples-1}%{max_jobs} {output_job_script}")
