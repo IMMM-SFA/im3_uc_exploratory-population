@@ -100,3 +100,6 @@ scenario = 'SSP2'
 
 sa_popgrid.reproduce_experiment(data_dir, simulation_output_dir, base_year, projection_year, scenario, let_fail=False)
 ```
+
+### Extending the input data to accomodate a larger kernel distance reach
+The original data was created to only include grid cells from other states when running a target state for 100 km around the border of the target state.  Since we wanted to envelope the kernel distance parameter default setting of 100 km that was used in Zoraghein and O'Neill (2020) by 50 km (50 km to 150 km), we have to rebuild the original data to support this.
