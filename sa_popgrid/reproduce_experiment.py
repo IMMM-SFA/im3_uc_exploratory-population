@@ -27,8 +27,6 @@ def compare_outputs(original_raster, simulated_raster, relative_tolerance=1e-6, 
     with rasterio.open(simulated_raster) as sim:
         sim_array = sim.read(1)
 
-    # np.testing.assert_allclose(orig_array, sim_array, rtol=relative_tolerance, atol=absolute_tolerance)
-
     if let_fail:
         np.testing.assert_allclose(orig_array, sim_array, rtol=relative_tolerance, atol=absolute_tolerance)
 

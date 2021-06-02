@@ -103,3 +103,18 @@ sa_popgrid.reproduce_experiment(data_dir, simulation_output_dir, base_year, proj
 
 ### Extending the input data to accomodate a larger kernel distance reach
 The original data was created to only include grid cells from other states when running a target state for 100 km around the border of the target state.  Since we wanted to envelope the kernel distance parameter default setting of 100 km that was used in Zoraghein and O'Neill (2020) by 50 km (50 km to 150 km), we have to rebuild the original data to support this.
+
+```python
+import sa_popgrid
+
+# directory of the unzipped data from Zenodo
+data_dir = '<your directory>/zoraghein-oneill_population_gravity_inputs_outputs'
+
+# directory that will hold the newly modified inputs.
+output_dir = '<your output directory>'
+
+# list of years as 4-digit integers to process
+target_year_list = [2000, 2010]
+
+sa_popgrid.build_new_data(data_dir, output_dir, target_year_list)
+```
