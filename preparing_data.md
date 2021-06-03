@@ -101,7 +101,7 @@ scenario = 'SSP2'
 sa_popgrid.reproduce_experiment(data_dir, simulation_output_dir, base_year, projection_year, scenario, let_fail=False)
 ```
 
-### Extending the input data to accomodate a larger kernel distance reach
+### Extending the input data to accommodate a larger kernel distance reach
 The original data was created to only include grid cells from other states when running a target state for 100 km around the border of the target state.  Since we wanted to envelope the kernel distance parameter default setting of 100 km that was used in Zoraghein and O'Neill (2020) by 50 km (50 km to 150 km), we have to rebuild the original data to support this.
 
 ```python
@@ -117,4 +117,40 @@ output_dir = '<your output directory>'
 target_year_list = [2000, 2010]
 
 sa_popgrid.build_new_data(data_dir, output_dir, target_year_list)
+```
+
+### Running a simulation using year 2000 as the observed data to simulate year 2010 observed data using published parameter values.  
+
+Year 2000 was used as the base year to calibrate to year 2010 observed data.  We want to recreate the validation.
+
+
+```python
+import sa_popgrid
+
+# the output directory of the newly extended datasets
+
+
+sa_popgrid.run_simulation_allstates(grid_coordinates_file,
+                                    base_rural_pop_raster,
+                                    base_urban_pop_raster,
+                                    historical_suitability_raster,
+                                    projected_population_file,
+                                    one_dimension_indices_file,
+                                    output_directory,
+                                    alpha_urban,
+                                    alpha_rural,
+                                    beta_urban,
+                                    beta_rural,
+                                    kernel_distance_meters,
+                                    scenario,
+                                    state_name,
+                                    historic_base_year,
+                                    projection_year,
+                                    write_raster=True,
+                                    write_array1d=False,
+                                    write_array2d=False,
+                                    write_csv=False,
+                                    write_logfile=False,
+                                    write_suitability=False)
+
 ```

@@ -6,6 +6,8 @@ import pandas as pd
 
 import rasterio
 
+import sa_popgrid.utils as utils
+
 from population_gravity import Model
 
 
@@ -41,14 +43,6 @@ def compare_outputs(original_raster, simulated_raster, relative_tolerance=1e-6, 
             return 'invalid'
 
 
-def get_state_list():
-    """Get a list of states from the input directory."""
-
-    states_df = pd.read_csv(pkg_resources.resource_filename('population_gravity', 'data/neighboring_states_100km.csv'))
-
-    return states_df['target_state'].unique()
-
-
 def compare_observed_versus_simulated(target_state, scenario, historical_year, projection_year, data_dir,
                                       simulation_output_dir, kernel_distance_meters=100000, let_fail=True):
     """Compare observed versus simulated to see if we can reproduce the outputs that were published."""
@@ -80,7 +74,7 @@ def compare_observed_versus_simulated(target_state, scenario, historical_year, p
     beta_rural = params_df['Beta_Rural'].values[0]
     kernel_distance_meters = kernel_distance_meters
 
-    # reproduce original data for California
+    # reproduce original data
     run = Model(grid_coordinates_file=grid_coordinates_file,
                 base_rural_pop_raster=base_rural_pop_raster,
                 base_urban_pop_raster=base_urban_pop_raster,
@@ -166,7 +160,7 @@ def reproduce_experiment(data_dir, simulation_output_dir, base_year, projection_
     assertion_log = os.path.join(simulation_output_dir, 'assertion.log')
 
     # get a list of all states to process; name all lower case and underscore separated where necessary
-    state_list = get_state_list()
+    state_list = utils.get_state_list()
 
     result_logs = []
 

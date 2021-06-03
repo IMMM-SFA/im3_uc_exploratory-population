@@ -1,3 +1,16 @@
+import pkg_resources
+
+
+def get_state_list():
+    """Get a list of states from the input directory.
+
+    :return:                                    Array of all states
+
+    """
+
+    states_df = pd.read_csv(pkg_resources.resource_filename('population_gravity', f'data/neighboring_states_150km.csv'))
+
+    return states_df['target_state'].unique()
 
 
 def build_sbatch_call(output_job_script, samples):
