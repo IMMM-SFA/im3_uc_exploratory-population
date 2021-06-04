@@ -75,6 +75,7 @@ def run_validation(target_state, historical_year, projection_year, data_dir,
     historical_suitability_raster = os.path.join(input_dir, f'{target_state}_mask_short_term.tif')
 
     # TODO:  replace this with a function that gets the population from the projected years observed raster
+    # TODO:  this solution is in get_observed_pop.ipynb
     projected_population_file = os.path.join(input_dir, f'{target_state}_{scenario}_popproj.csv')
 
     parameter_file = pkg_resources.resource_filename('sa_popgrid', 'data/calibration_parameters/f"{target_state}_calibration_params_{historical_year}to{projection_year}.csv")
