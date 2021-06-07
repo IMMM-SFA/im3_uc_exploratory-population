@@ -1,7 +1,25 @@
 import pkg_resources
 
+import rasterio
 import pandas as pd
 
+
+def get_population_from_raster(raster_file, indices_list) -> float:
+    """Get the population sum of all valid grid cells within a state.
+
+    :param raster_file:             Full path with file name and extension to the input population raster file
+    :type raster_file:              str
+
+    :param indices_list:            List of index values for grid cells that are within the target state
+    :type indices_list:             list
+
+    :return:                        population sum in number of humans for the target state
+
+    """
+
+    with rasterio.open(raster_file) as src:
+
+        return src.read(1).flatten()[indices_list].sum()
 
 def get_state_list():
     """Get a list of states from the input directory.
