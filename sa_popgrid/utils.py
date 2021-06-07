@@ -1,5 +1,7 @@
 import pkg_resources
 
+import pandas as pd
+
 
 def get_state_list():
     """Get a list of states from the input directory.
