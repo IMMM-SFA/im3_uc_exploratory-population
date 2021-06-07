@@ -119,7 +119,7 @@ target_year_list = [2000, 2010]
 sa_popgrid.build_new_data(data_dir, output_dir, target_year_list)
 ```
 
-### Running a simulation using year 2000 as the observed data to simulate year 2010 observed data using published parameter values.  
+### Validation: Running a simulation using year 2000 as the observed data to simulate year 2010 observed data using published parameter values.  
 
 Year 2000 was used as the base year to calibrate to year 2010 observed data.  We want to recreate the validation.
 
@@ -127,30 +127,17 @@ Year 2000 was used as the base year to calibrate to year 2010 observed data.  We
 ```python
 import sa_popgrid
 
-# the output directory of the newly extended datasets
+# your directory to the newly modified inputs
+data_dir = '<your directory that holds the newly modified inputs>'
 
+simulation_output_dir = '<directory to write the outputs to>'
 
-sa_popgrid.run_simulation_allstates(grid_coordinates_file,
-                                    base_rural_pop_raster,
-                                    base_urban_pop_raster,
-                                    historical_suitability_raster,
-                                    projected_population_file,
-                                    one_dimension_indices_file,
-                                    output_directory,
-                                    alpha_urban,
-                                    alpha_rural,
-                                    beta_urban,
-                                    beta_rural,
-                                    kernel_distance_meters,
-                                    scenario,
-                                    state_name,
-                                    historic_base_year,
-                                    projection_year,
-                                    write_raster=True,
-                                    write_array1d=False,
-                                    write_array2d=False,
-                                    write_csv=False,
-                                    write_logfile=False,
-                                    write_suitability=False)
+historical_year = 2000
+projection_year = 2010
 
+# run for all states
+sa_popgrid.run_validation_allstates(historical_year, projection_year, data_dir, simulation_output_dir)
+
+# HINT:  You can also run for a single state using the following...
+sa_popgrid.run_validation(target_state='<my target state>', historical_year, projection_year, data_dir, simulation_output_dir)
 ```

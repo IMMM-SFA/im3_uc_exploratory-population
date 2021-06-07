@@ -11,7 +11,7 @@ def get_population_from_raster(raster_file, indices_list) -> float:
     :type raster_file:              str
 
     :param indices_list:            List of index values for grid cells that are within the target state
-    :type indices_list:             list
+    :type indices_list:             ndarray
 
     :return:                        population sum in number of humans for the target state
 

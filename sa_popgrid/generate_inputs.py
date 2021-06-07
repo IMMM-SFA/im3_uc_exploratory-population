@@ -154,7 +154,7 @@ class Data:
         self.new_within_indices_file = os.path.join(self.output_dir, f"{self.state_name}_within_indices.txt")
 
         # original suitability mask file with repaired resolution
-        self.corrected_mask_file = os.path.join(temp_dir, f"{self.orig_state_name}_mask_short_term.tif")
+        self.corrected_mask_file = os.path.join(self.temp_dir, f"{self.orig_state_name}_mask_short_term.tif")
 
         # new suitability mask file to be mosaicked
         self.out_mask_raster_file = os.path.join(self.output_dir, f'{self.state_name}_mask_short_term.tif')
