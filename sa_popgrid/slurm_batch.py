@@ -1,9 +1,9 @@
 import os
 
 
-def run_batch(output_job_script, n_samples, input_directory, sample_directory, output_directory, hist_yr, start_yr,
-              end_yr, state_name, ssp, venv_dir, walltime='01:00:00', submit_job=True, partition='normal',
-              account_name='', max_jobs=None):
+def run_batch(output_job_script, n_samples, data_dir, sample_directory, simulation_output_dir, slurm_out_dir,
+              venv_dir, hist_yr, proj_yr, state_name, scenario, walltime='01:00:00', submit_job=True, partition='normal',
+              account_name='', max_jobs=None, method='validation'):
     """This script will launch SLURM tasks that will execute batch.py to create run outputs for each
     sample and problem dictionary.
 
@@ -13,8 +13,8 @@ def run_batch(output_job_script, n_samples, input_directory, sample_directory, o
     :param sample_list:                         A list of samples desired.  E.g., [20, 50]
     :type sample_list:                          list
 
-    :param output_directory:                    Full path to the directory where the outputs will be stored
-    :type output_directory:                     str
+    :param simulation_output_dir:               Full path to the directory where the outputs will be stored
+    :type simulation_output_dir:                str
 
     :param venv_dir:                            Full path to your Python virtual environment
     :type venv_dir:                             str
@@ -22,7 +22,19 @@ def run_batch(output_job_script, n_samples, input_directory, sample_directory, o
     :param walltime:                            Time limit for each SLURM job in HH:MM:SS
     :type walltime:                             str
 
+    :param method:                              Either 'validation' or 'simulation'
+    :type method:                               str
+
     """
+
+    method = method.lower()
+
+    if method not in ('validation', 'simulation'):
+        raise ValueError(f"Value for 'mode' = {method} is not valid. Must be 'validation' or 'simulation'")
+
+    # set which function to use based off of the mode
+    if method == 'validation':
+        target_function = 'run_validation'
 
     # build strings for shell variables
     runtime_str = '{RUNTIME}'
@@ -67,7 +79,19 @@ def run_batch(output_job_script, n_samples, input_directory, sample_directory, o
                 STARTTIME=`date +%s`
 
                 # execute Python script
-                python3 -c "from sa_popgrid.batch import main; main({n_samples}, '{input_directory}', '{sample_directory}', '{output_directory}', {sample_index}, {hist_yr}, {start_yr}, {end_yr}, '{state_name}', '{ssp}')"
+                python -c "import sa_popgrid; sa_popgrid.{target_function}(target_state='{state_name}',
+                                               historical_year={hist_yr},
+                                               projection_year={proj_yr},
+                                               data_dir='{data_dir}',
+                                               simulation_output_dir='{simulation_output_dir}',
+                                               scenario='{scenario}',
+                                               lhs_array_file=None,
+                                               lhs_problem_file=None,
+                                               sample_id={sample_index},
+                                               write_logfile=False,
+                                               write_raster=False,
+                                               output_total=False,
+                                               write_array1d=True)"
 
                 ENDTIME=`date +%s`
                 RUNTIME=$((ENDTIME-STARTTIME))

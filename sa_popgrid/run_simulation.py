@@ -62,7 +62,9 @@ def run_simulation(grid_coordinates_file,
 
 
 def run_validation_allstates(historical_year, projection_year, data_dir, simulation_output_dir,
-                             kernel_distance_meters=100000, scenario='validation'):
+                             kernel_distance_meters=100000, scenario='validation', lhs_array_file=None,
+                             lhs_problem_file=None, sample_id='', write_logfile=False, write_raster=False,
+                             output_total=False, write_array1d=False):
     """Run validation for all states. Validation run to compare observed versus simulated to see if we can reproduce
     the outputs that were published.  Population projections are taken directly from the year in which the
     validation is being conducted (e.g., if projection_year is 2010, 2010 projected population will be from the
@@ -80,11 +82,37 @@ def run_validation_allstates(historical_year, projection_year, data_dir, simulat
     :param simulation_output_dir:               Output directory to save validation simulations to
     :type simulation_output_dir:                str
 
-    :param kernel_distance_meters:              Kernel distance to search for nearby suitability
+    :param kernel_distance_meters:              Kernel distance to search for nearby suitability. This gets overridden
+                                                when running LHS.
     :type kernel_distance_meters:               float
 
     :param scenario:                            Scenario name
     :type scenario:                             str
+
+    :param lhs_array_file:                      Full path with file name and extension to the LHS array NPY file. If
+                                                none is provide, the default 1000 samples file will be used.
+    :type lhs_array_file:                       str
+
+    :param lhs_problem_file:                    Full path with file name and extension to the LHS problem dictionary
+                                                pickled file. If none is provide, the default 1000 samples file will be used.
+    :type lhs_problem_file:                     str
+
+    :param sample_id:                           Sample number from the LHS array by index.  If provided, the code will
+                                                assume you are running in LHS mode.
+    :type sample_id:                            int
+
+    :param write_logfile:                       Optionally write log to file
+    :type write_logfile:                        bool
+
+    :param write_raster:                        Optionally export raster output
+    :type write_raster:                         bool
+
+    :param output_total:                        Choice to output total (urban + rural) dataset
+    :type output_total:                         bool
+
+    :param write_array1d:                       Optionally export a Numpy 1D flattened array of only grid cells
+                                                within the target state
+    :type write_array1d:                        bool
 
     """
 
@@ -99,12 +127,20 @@ def run_validation_allstates(historical_year, projection_year, data_dir, simulat
                        data_dir,
                        simulation_output_dir,
                        kernel_distance_meters,
-                       scenario)
+                       scenario,
+                       lhs_array_file,
+                       lhs_problem_file,
+                       sample_id,
+                       write_logfile,
+                       write_raster,
+                       output_total,
+                       write_array1d)
 
 
 def run_validation(target_state, historical_year, projection_year, data_dir, simulation_output_dir,
                    kernel_distance_meters=100000, scenario='validation', lhs_array_file=None,
-                   lhs_problem_file=None, sample_id=''):
+                   lhs_problem_file=None, sample_id='', write_logfile=False, write_raster=False,
+                   output_total=False, write_array1d=False):
     """Validation run to compare observed versus simulated to see if we can reproduce the outputs that were
     published.  Population projections are taken directly from the year in which the validation is being
     conducted (e.g., if projection_year is 2010, 2010 projected population will be from the observed 2010 data sets).
@@ -133,6 +169,31 @@ def run_validation(target_state, historical_year, projection_year, data_dir, sim
 
     :param scenario:                            Scenario name
     :type scenario:                             str
+
+    :param lhs_array_file:                      Full path with file name and extension to the LHS array NPY file. If
+                                                none is provide, the default 1000 samples file will be used.
+    :type lhs_array_file:                       str
+
+    :param lhs_problem_file:                    Full path with file name and extension to the LHS problem dictionary
+                                                pickled file. If none is provide, the default 1000 samples file will be used.
+    :type lhs_problem_file:                     str
+
+    :param sample_id:                           Sample number from the LHS array by index.  If provided, the code will
+                                                assume you are running in LHS mode.
+    :type sample_id:                            int
+
+    :param write_logfile:                       Optionally write log to file
+    :type write_logfile:                        bool
+
+    :param write_raster:                        Optionally export raster output
+    :type write_raster:                         bool
+
+    :param output_total:                        Choice to output total (urban + rural) dataset
+    :type output_total:                         bool
+
+    :param write_array1d:                       Optionally export a Numpy 1D flattened array of only grid cells
+                                                within the target state
+    :type write_array1d:                        bool
 
     """
 
@@ -237,9 +298,10 @@ def run_validation(target_state, historical_year, projection_year, data_dir, sim
                 state_name=target_state,
                 historic_base_year=historical_year,
                 projection_year=projection_year,
-                write_raster=True,
-                write_logfile=True,
-                output_total=True,
+                write_raster=write_raster,
+                write_logfile=write_logfile,
+                output_total=output_total,
+                write_array1d=write_array1d,
                 run_number=sample_id)
 
     run.downscale()
