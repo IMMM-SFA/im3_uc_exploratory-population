@@ -1,5 +1,6 @@
 import os
 import pkg_resources
+import pickle
 
 import simplejson
 import numpy as np
@@ -102,11 +103,14 @@ def run_validation_allstates(historical_year, projection_year, data_dir, simulat
 
 
 def run_validation(target_state, historical_year, projection_year, data_dir, simulation_output_dir,
-                   kernel_distance_meters=100000, scenario='validation'):
+                   kernel_distance_meters=100000, scenario='validation', lhs_array_file=None,
+                   lhs_problem_file=None, sample_id=''):
     """Validation run to compare observed versus simulated to see if we can reproduce the outputs that were
     published.  Population projections are taken directly from the year in which the validation is being
     conducted (e.g., if projection_year is 2010, 2010 projected population will be from the observed 2010 data sets).
     Calibration parameters are those that were used in the publication.
+
+    If running for LHS samples, pass the alpha and beta parameter values and the default parameters will be overridden.
 
     :param target_state:                        Target state name to run all lower case and underscore separated
     :type target_state:                         str
@@ -123,7 +127,8 @@ def run_validation(target_state, historical_year, projection_year, data_dir, sim
     :param simulation_output_dir:               Output directory to save validation simulations to
     :type simulation_output_dir:                str
 
-    :param kernel_distance_meters:              Kernel distance to search for nearby suitability
+    :param kernel_distance_meters:              Kernel distance to search for nearby suitability. This gets overridden
+                                                when running LHS.
     :type kernel_distance_meters:               float
 
     :param scenario:                            Scenario name
@@ -158,18 +163,61 @@ def run_validation(target_state, historical_year, projection_year, data_dir, sim
     rural_pop_proj_n = utils.get_population_from_raster(proj_rural_pop_raster, valid_indices)
     urban_pop_proj_n = utils.get_population_from_raster(proj_urban_pop_raster, valid_indices)
 
-    # retrieve the published calibration parameters for the target state and calibration year
-    parameter_file = pkg_resources.resource_filename('sa_popgrid', f'data/calibration_parameters/{target_state}_calibration_params_{historical_year}to{projection_year}.csv')
+    # if not running LHS samples
+    if sample_id == '':
 
-    # create a data frame from the projected data
-    params_df = pd.read_csv(parameter_file)
+        # retrieve the published calibration parameters for the target state and calibration year
+        parameter_file = pkg_resources.resource_filename('sa_popgrid', f'data/calibration_parameters/{target_state}_calibration_params_{historical_year}to{projection_year}.csv')
 
-    # unpack parameters
-    alpha_urban = params_df['Alpha_Urban'].values[0]
-    alpha_rural = params_df['Alpha_Rural'].values[0]
-    beta_urban = params_df['Beta_Urban'].values[0]
-    beta_rural = params_df['Beta_Rural'].values[0]
-    kernel_distance_meters = kernel_distance_meters
+        # create a data frame from the projected data
+        params_df = pd.read_csv(parameter_file)
+
+        # unpack parameters
+        alpha_urban = params_df['Alpha_Urban'].values[0]
+        alpha_rural = params_df['Alpha_Rural'].values[0]
+        beta_urban = params_df['Beta_Urban'].values[0]
+        beta_rural = params_df['Beta_Rural'].values[0]
+        kernel_distance_meters = kernel_distance_meters
+
+    else:
+
+        # load lhs array from default if the user does not pass one
+        if lhs_array_file is None:
+            lhs_array = np.load(pkg_resources.resource_filename('sa_popgrid', 'data/lhs_1000_sample.npy'))
+        else:
+            lhs_array = np.load(lhs_array_file)
+
+        # confirm the position of the parameters in the array
+        if lhs_problem_file is None:
+
+            with open(pkg_resources.resource_filename('sa_popgrid', 'data/lhs_1000_problem_dict.p'), "rb") as prob:
+                lhs_problem_dict = pickle.load(prob)
+
+        else:
+            with open(lhs_problem_file, "rb") as prob:
+                lhs_problem_dict = pickle.load(prob)
+
+        # get parameter names in list
+        param_names = lhs_problem_dict.get('names')
+
+        # construct a data frame to query out target params
+        df_params = pd.DataFrame({param_names[0]: lhs_array[:, 0],
+                                  param_names[1]: lhs_array[:, 1],
+                                  param_names[2]: lhs_array[:, 2],
+                                  param_names[3]: lhs_array[:, 3],
+                                  param_names[4]: lhs_array[:, 4]})
+
+        # sample ids start with index of 0 and go through n_samples - 1
+        df_params['n'] = df_params.index
+
+        # get all parameters associated with a sample id
+        x = df_params.loc[df_params['n'] == sample_id]
+
+        alpha_urban = x['alpha_urban'].values[0]
+        alpha_rural = x['alpha_rural'].values[0]
+        beta_urban = x['beta_urban'].values[0]
+        beta_rural = x['beta_rural'].values[0]
+        kernel_distance_meters = x['kernel_distance_meters'].values[0]
 
     # reproduce original data
     run = Model(grid_coordinates_file=grid_coordinates_file,
@@ -191,6 +239,7 @@ def run_validation(target_state, historical_year, projection_year, data_dir, sim
                 projection_year=projection_year,
                 write_raster=True,
                 write_logfile=True,
-                output_total=True)
+                output_total=True,
+                run_number=sample_id)
 
     run.downscale()

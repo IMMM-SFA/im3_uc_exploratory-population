@@ -205,3 +205,5 @@ with open('<my path to write my file.p to>', 'wb') as prob:
 # save array as npy file
 np.save('<my path to write my file.npy to>', lhs_arr)
 ```
+
+### Run LHS runs using the observed year of 2000 as the base historical year and 2010 as the simulated year for all 1000 LHS samples.  This will assume the projected population to be what is in the 2010 observed data and NOT what is in the SSPs.  
