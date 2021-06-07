@@ -1,1 +1,2 @@
 include sa_popgrid/data/calibration_parameters/*
+include sa_popgrid/data/*
