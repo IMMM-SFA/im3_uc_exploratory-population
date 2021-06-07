@@ -141,3 +141,67 @@ sa_popgrid.run_validation_allstates(historical_year, projection_year, data_dir, 
 # HINT:  You can also run for a single state using the following...
 sa_popgrid.run_validation(target_state='<my target state>', historical_year, projection_year, data_dir, simulation_output_dir)
 ```
+
+### Create Latin Hypercube Sample (LHS) and problem dictionary
+The current LHS sample and problem dictionary that has been used for testing is stored within this package and can be accessed using:
+
+```python
+import pkg_resources
+import pickle
+
+import numpy as np
+
+# get file paths
+lhs_array_file = pkg_resources.resource_filename('sa_popgrid', 'data/lhs_1000_sample.npy')
+lhs_problem_dict_file = pkg_resources.resource_filename('sa_popgrid', 'data/lhs_1000_problem_dict.p')
+
+# load files
+lhs_array = np.load(lhs_array_file)
+
+with open(lhs_problem_dict_file, "rb") as prob:
+    lhs_problem_dict = pickle.load(prob)
+
+```
+
+These represent 1000 samples for the following bounds and parameters:
+
+```
+{'num_vars': 5,
+ 'names': ['alpha_urban',
+  'alpha_rural',
+  'beta_urban',
+  'beta_rural',
+  'kernel_distance_meters'],
+ 'bounds': [[-4, 4], [-4, 4], [-4, 4], [-4, 4], [50000, 150000]]}
+ ```
+
+The LHS array and problem dictionary can be generated and written to files using SALib like the following:
+
+```python
+import pickle
+
+import numpy as np
+
+from SALib.sample import latin
+
+n_samples = 1000
+
+# create your problem dictionary
+problem = {'num_vars': 5,
+             'names': ['alpha_urban',
+              'alpha_rural',
+              'beta_urban',
+              'beta_rural',
+              'kernel_distance_meters'],
+             'bounds': [[-4, 4], [-4, 4], [-4, 4], [-4, 4], [50000, 150000]]}
+
+# create your LHS array
+lhs_arr = latin.sample(problem, n_samples)
+
+# write problem dictionary as a pickled file
+with open('<my path to write my file.p to>', 'wb') as prob:
+    pickle.dump(problem, prob)
+
+# save array as npy file
+np.save('<my path to write my file.npy to>', lhs_arr)
+```
