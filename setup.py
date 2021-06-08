@@ -12,7 +12,11 @@ setup(
     description='Code and process for conducting sensitivity analysis for the gridded population gravity model on a cluster',
     python_requires='>=3.6',
     install_requires=[
-
+        'rasterio~=1.2.3',
+        'simplejson~=3.17.0',
+        'numpy~=1.20.3',
+        'pandas~=1.2.4',
+        'xarray~=0.18.2',
     ],
     include_package_data=True
 )
