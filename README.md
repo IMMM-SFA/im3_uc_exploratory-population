@@ -1,7 +1,7 @@
 # sa_popgrid
 Code and process for conducting sensitivity analysis for the gridded population gravity model on a cluster
 
-## Getting Started using `sa_popgrid` on a cluster
+## Getting started with this experiment on a cluster
 
 ### Note
 The following code was tested on THECUBE cluster courtesy of the Reed Research Group at Cornell University.  This cluster has 32 compute nodes with dual 8-core Intel E52680 CPUs @ 2.7 GHz with 128 GB of RAM running OpenHPC v1.3.8 with CentOS 7.6.
@@ -170,7 +170,7 @@ base_year = 2010
 projection_year = 2020
 scenario = 'SSP2'
 
-sa_popgrid.reproduce_experiment(data_dir, simulation_output_dir, base_year, projection_year, scenario, let_fail=False)
+sa_popgrid.reproduce_original_experiment(data_dir, simulation_output_dir, base_year, projection_year, scenario, let_fail=False)
 ```
 
 ### Extending the input data to accommodate a larger kernel distance reach
@@ -191,28 +191,6 @@ target_year_list = [2000, 2010]
 sa_popgrid.build_new_data(data_dir, output_dir, target_year_list)
 ```
 
-### Validation: Running a simulation using year 2000 as the observed data to simulate year 2010 observed data using published parameter values.  
-
-Year 2000 was used as the base year to calibrate to year 2010 observed data.  We want to recreate the validation.
-
-
-```python
-import sa_popgrid
-
-# your directory to the newly modified inputs
-data_dir = '<your directory that holds the newly modified inputs>'
-
-simulation_output_dir = '<directory to write the outputs to>'
-
-historical_year = 2000
-projection_year = 2010
-
-# run for all states
-sa_popgrid.run_validation_allstates(historical_year, projection_year, data_dir, simulation_output_dir)
-
-# HINT:  You can also run for a single state using the following...
-sa_popgrid.run_validation(target_state='<my target state>', historical_year, projection_year, data_dir, simulation_output_dir)
-```
 
 ### Create Latin Hypercube Sample (LHS) and problem dictionary
 The current LHS sample and problem dictionary that has been used for testing is stored within this package and can be accessed using:
@@ -278,7 +256,33 @@ with open('<my path to write my file.p to>', 'wb') as prob:
 np.save('<my path to write my file.npy to>', lhs_arr)
 ```
 
-### Run LHS runs using the observed year of 2000 as the base historical year and 2010 as the validation year for all 1000 LHS samples.  This will assume the projected population to be what is in the 2010 observed data and NOT what is in the SSPs.  
+
+### Validation
+
+#### Running the validation using year 2000 as the observed data to simulate year 2010 observed data using published parameter values
+
+Year 2000 was used as the base year to calibrate to year 2010 observed data.  We want to recreate the validation.
+
+
+```python
+import sa_popgrid
+
+# your directory to the newly modified inputs
+data_dir = '<your directory that holds the newly modified inputs>'
+
+simulation_output_dir = '<directory to write the outputs to>'
+
+historical_year = 2000
+projection_year = 2010
+
+# run for all states
+sa_popgrid.run_validation_allstates(historical_year, projection_year, data_dir, simulation_output_dir)
+
+# HINT:  You can also run for a single state using the following...
+sa_popgrid.run_validation(target_state='<my target state>', historical_year, projection_year, data_dir, simulation_output_dir)
+```
+
+#### Run LHS runs using the observed year of 2000 as the base historical year and 2010 as the validation year for all 1000 LHS samples.  This will assume the projected population to be what is in the 2010 observed data and NOT what is in the SSPs.  
 
 We do this step to evaluate the influence of varying parameter values on our validation data.
 
@@ -341,3 +345,65 @@ sa_popgrid.submit_slurm_array(output_script_dir,
 ```
 
 **NOTE:** I chose to write the outputs as 1D arrays (.npy files) that only write out the valid grid cell values for the target state.  This greatly improves storage size.  The arrays can then be converted to CSV file containing the following fields using the `convert_1d_array_to_csv()` function:  [Xcoord, Ycoord, FID, n], where "XCoord" is the X coordinate value, "YCoord" is the Y coordinate value, "FID" is the index of the grid cell when flattened to a 1D array, and "n" is the population output from the run.
+
+### Future simulation
+
+#### Running a simulation for each LHS sample using year 2010 as the base year (observed) and 2020 as the projected year using population projections from SSP2
+
+**NOTE:** The following is meant to run on a cluster that utilizes the SLURM to schedule jobs.
+
+```python
+import sa_popgrid
+
+
+output_script_dir = '<the path to the directory that my SLURM scripts will be written to>'
+
+# the number of samples in your sample array
+n_samples = 1000
+
+# your directory to the newly modified inputs
+data_dir = '<your directory that holds the newly modified inputs>'
+
+# directory to write the outputs to
+simulation_output_dir = '<your output dir>'
+
+# directory to write the SLURM out log files to
+slurm_out_dir = '<your output dir>'
+
+# directory of my Python virtual environment
+venv_dir = '/my/env'
+
+# year to use as the historical reference data (e.g., observed data or previous year)
+hist_yr = 2010
+
+# validation or projection year
+proj_yr = 2020
+
+# state name to process as all lower case with underscore separators
+state_name = '<my_target_state_name>'
+
+# using validation as the scenario name
+scenario = 'SSP2'
+
+# see help for additional option explanations
+sa_popgrid.submit_slurm_array(output_script_dir,
+                               n_samples, data_dir,
+                               simulation_output_dir,
+                               slurm_out_dir,
+                               venv_dir,
+                               hist_yr,
+                               proj_yr,
+                               state_name,
+                               scenario,
+                               walltime='04:00:00',
+                               submit_job=True,
+                               partition='normal',
+                               account_name='',
+                               max_jobs=10,
+                               method='simulation',
+                               lhs_array_file=None,
+                               lhs_problem_file=None,
+                               write_raster=False,
+                               output_total=False,
+                               write_array1d=True)
+```

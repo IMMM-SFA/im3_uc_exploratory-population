@@ -10,141 +10,8 @@ import sa_popgrid.utils as utils
 from population_gravity import Model
 
 
-def run_simulation(grid_coordinates_file,
-                    base_rural_pop_raster,
-                    base_urban_pop_raster,
-                    historical_suitability_raster,
-                    projected_population_file,
-                    one_dimension_indices_file,
-                    output_directory,
-                    alpha_urban,
-                    alpha_rural,
-                    beta_urban,
-                    beta_rural,
-                    kernel_distance_meters,
-                    scenario,
-                    state_name,
-                    historic_base_year,
-                    projection_year,
-                    write_raster=True,
-                    write_array1d=False,
-                    write_array2d=False,
-                    write_csv=False,
-                    write_logfile=False,
-                    write_suitability=False):
-
-    """Run simuation to downscale population for a projected year."""
-
-    run = Model(grid_coordinates_file=grid_coordinates_file,
-                base_rural_pop_raster=base_rural_pop_raster,
-                base_urban_pop_raster=base_urban_pop_raster,
-                historical_suitability_raster=historical_suitability_raster,
-                projected_population_file=projected_population_file,
-                one_dimension_indices_file=one_dimension_indices_file,
-                output_directory=output_directory,
-                alpha_urban=alpha_urban,
-                alpha_rural=alpha_rural,
-                beta_urban=beta_urban,
-                beta_rural=beta_rural,
-                kernel_distance_meters=kernel_distance_meters,
-                scenario=scenario,
-                state_name=state_name,
-                historic_base_year=historic_base_year,
-                projection_year=projection_year,
-                write_raster=write_raster,
-                write_array1d=write_array1d,
-                write_array2d=write_array2d,
-                write_csv=write_csv,
-                write_logfile=write_logfile,
-                write_suitability=write_suitability)
-
-    run.downscale()
-
-
-def run_validation_allstates(historical_year, projection_year, data_dir, simulation_output_dir,
-                             kernel_distance_meters=100000, scenario='validation', lhs_array_file=None,
-                             lhs_problem_file=None, sample_id='', write_logfile=False, write_raster=False,
-                             output_total=False, write_array1d=False):
-    """Run validation for all states. Validation run to compare observed versus simulated to see if we can reproduce
-    the outputs that were published.  Population projections are taken directly from the year in which the
-    validation is being conducted (e.g., if projection_year is 2010, 2010 projected population will be from the
-    observed 2010 data sets). Calibration parameters are those that were used in the publication.
-
-    :param historical_year:                     Base year of observed data in YYYY format
-    :type historical_year:                      int
-
-    :param projection_year:                     Validation year from observed data in YYYY format
-    :type projection_year:                      int
-
-    :param data_dir:                            Directory containing the input data from the newly formatted inputs.
-    :type data_dir:                             str
-
-    :param simulation_output_dir:               Output directory to save validation simulations to
-    :type simulation_output_dir:                str
-
-    :param kernel_distance_meters:              Kernel distance to search for nearby suitability. This gets overridden
-                                                when running LHS.
-    :type kernel_distance_meters:               float
-
-    :param scenario:                            Scenario name
-    :type scenario:                             str
-
-    :param lhs_array_file:                      Full path with file name and extension to the LHS array NPY file. If
-                                                none is provide, the default 1000 samples file will be used.
-    :type lhs_array_file:                       str
-
-    :param lhs_problem_file:                    Full path with file name and extension to the LHS problem dictionary
-                                                pickled file. If none is provide, the default 1000 samples file will be used.
-    :type lhs_problem_file:                     str
-
-    :param sample_id:                           Sample number from the LHS array by index.  If provided, the code will
-                                                assume you are running in LHS mode.
-    :type sample_id:                            int
-
-    :param write_logfile:                       Optionally write log to file
-    :type write_logfile:                        bool
-
-    :param write_raster:                        Optionally export raster output
-    :type write_raster:                         bool
-
-    :param output_total:                        Choice to output total (urban + rural) dataset
-    :type output_total:                         bool
-
-    :param write_array1d:                       Optionally export a Numpy 1D flattened array of only grid cells
-                                                within the target state
-    :type write_array1d:                        bool
-
-    """
-
-    # get a list of all states to process; name all lower case and underscore separated where necessary
-    state_list = utils.get_state_list()
-
-    for target_state in state_list:
-
-        run_validation(target_state,
-                       historical_year,
-                       projection_year,
-                       data_dir,
-                       simulation_output_dir,
-                       kernel_distance_meters,
-                       scenario,
-                       lhs_array_file,
-                       lhs_problem_file,
-                       sample_id,
-                       write_logfile,
-                       write_raster,
-                       output_total,
-                       write_array1d)
-
-
-def run_validation(target_state, historical_year, projection_year, data_dir, simulation_output_dir,
-                   kernel_distance_meters=100000, scenario='validation', lhs_array_file=None,
-                   lhs_problem_file=None, sample_id='', write_logfile=False, write_raster=False,
-                   output_total=False, write_array1d=False):
-    """Validation run to compare observed versus simulated to see if we can reproduce the outputs that were
-    published.  Population projections are taken directly from the year in which the validation is being
-    conducted (e.g., if projection_year is 2010, 2010 projected population will be from the observed 2010 data sets).
-    Calibration parameters are those that were used in the publication.
+def run_model(**kwargs):
+    """Core simulation function to conduct either stand-alone or sample-based population_gravity model runs.
 
     If running for LHS samples, pass the alpha and beta parameter values and the default parameters will be overridden.
 
@@ -154,13 +21,13 @@ def run_validation(target_state, historical_year, projection_year, data_dir, sim
     :param historical_year:                     Base year of observed data in YYYY format
     :type historical_year:                      int
 
-    :param projection_year:                     Validation year from observed data in YYYY format
+    :param projection_year:                     Projection year in YYYY format
     :type projection_year:                      int
 
     :param data_dir:                            Directory containing the input data from the newly formatted inputs.
     :type data_dir:                             str
 
-    :param simulation_output_dir:               Output directory to save validation simulations to
+    :param simulation_output_dir:               Output directory to save simulations to
     :type simulation_output_dir:                str
 
     :param kernel_distance_meters:              Kernel distance to search for nearby suitability. This gets overridden
@@ -196,6 +63,22 @@ def run_validation(target_state, historical_year, projection_year, data_dir, sim
     :type write_array1d:                        bool
 
     """
+
+    # unpack args
+    target_state = kwargs.get('target_state')
+    historical_year = kwargs.get('historical_year')
+    projection_year = kwargs.get('projection_year')
+    data_dir = kwargs.get('data_dir')
+    simulation_output_dir = kwargs.get('simulation_output_dir')
+    kernel_distance_meters = kwargs.get('kernel_distance_meters')
+    scenario = kwargs.get('scenario')
+    lhs_array_file = kwargs.get('lhs_array_file')
+    lhs_problem_file = kwargs.get('lhs_problem_file')
+    sample_id = kwargs.get('sample_id')
+    write_logfile = kwargs.get('write_logfile')
+    write_raster = kwargs.get('write_raster')
+    output_total = kwargs.get('output_total')
+    write_array1d = kwargs.get('write_array1d')
 
     input_dir = os.path.join(data_dir, target_state, 'inputs')
 
@@ -305,3 +188,230 @@ def run_validation(target_state, historical_year, projection_year, data_dir, sim
                 run_number=sample_id)
 
     run.downscale()
+
+
+def run_validation(target_state, historical_year, projection_year, data_dir, simulation_output_dir,
+                   kernel_distance_meters=100000, scenario='validation', lhs_array_file=None,
+                   lhs_problem_file=None, sample_id='', write_logfile=False, write_raster=False,
+                   output_total=False, write_array1d=False):
+    """Validation run to compare observed versus simulated to see if we can reproduce the outputs that were
+    published.  Population projections are taken directly from the year in which the validation is being
+    conducted (e.g., if projection_year is 2010, 2010 projected population will be from the observed 2010 data sets).
+    Calibration parameters are those that were used in the publication.
+
+    If running for LHS samples, pass the alpha and beta parameter values and the default parameters will be overridden.
+
+    :param target_state:                        Target state name to run all lower case and underscore separated
+    :type target_state:                         str
+
+    :param historical_year:                     Base year of observed data in YYYY format
+    :type historical_year:                      int
+
+    :param projection_year:                     Validation year from observed data in YYYY format
+    :type projection_year:                      int
+
+    :param data_dir:                            Directory containing the input data from the newly formatted inputs.
+    :type data_dir:                             str
+
+    :param simulation_output_dir:               Output directory to save validation simulations to
+    :type simulation_output_dir:                str
+
+    :param kernel_distance_meters:              Kernel distance to search for nearby suitability. This gets overridden
+                                                when running LHS.
+    :type kernel_distance_meters:               float
+
+    :param scenario:                            Scenario name
+    :type scenario:                             str
+
+    :param lhs_array_file:                      Full path with file name and extension to the LHS array NPY file. If
+                                                none is provide, the default 1000 samples file will be used.
+    :type lhs_array_file:                       str
+
+    :param lhs_problem_file:                    Full path with file name and extension to the LHS problem dictionary
+                                                pickled file. If none is provide, the default 1000 samples file will be used.
+    :type lhs_problem_file:                     str
+
+    :param sample_id:                           Sample number from the LHS array by index.  If provided, the code will
+                                                assume you are running in LHS mode.
+    :type sample_id:                            int
+
+    :param write_logfile:                       Optionally write log to file
+    :type write_logfile:                        bool
+
+    :param write_raster:                        Optionally export raster output
+    :type write_raster:                         bool
+
+    :param output_total:                        Choice to output total (urban + rural) dataset
+    :type output_total:                         bool
+
+    :param write_array1d:                       Optionally export a Numpy 1D flattened array of only grid cells
+                                                within the target state
+    :type write_array1d:                        bool
+
+    """
+
+    run_model(target_state=target_state,
+              historical_year=historical_year,
+              projection_year=projection_year,
+              data_dir=data_dir,
+              simulation_output_dir=simulation_output_dir,
+              kernel_distance_meters=kernel_distance_meters,
+              scenario=scenario,
+              lhs_array_file=lhs_array_file,
+              lhs_problem_file=lhs_problem_file,
+              sample_id=sample_id,
+              write_logfile=write_logfile,
+              write_raster=write_raster,
+              output_total=output_total,
+              write_array1d=write_array1d)
+
+
+def run_validation_allstates(historical_year, projection_year, data_dir, simulation_output_dir,
+                             kernel_distance_meters=100000, scenario='validation', lhs_array_file=None,
+                             lhs_problem_file=None, sample_id='', write_logfile=False, write_raster=False,
+                             output_total=False, write_array1d=False):
+    """Run validation for all states for a single set of parameter values. Validation run to compare observed versus
+    simulated to see if we can reproduce the outputs that were published.  Population projections are taken directly
+    from the year in which the validation is being conducted (e.g., if projection_year is 2010, 2010 projected
+    population will be from the observed 2010 data sets). Calibration parameters are those that were used in the
+    publication.
+
+    :param historical_year:                     Base year of observed data in YYYY format
+    :type historical_year:                      int
+
+    :param projection_year:                     Validation year from observed data in YYYY format
+    :type projection_year:                      int
+
+    :param data_dir:                            Directory containing the input data from the newly formatted inputs.
+    :type data_dir:                             str
+
+    :param simulation_output_dir:               Output directory to save validation simulations to
+    :type simulation_output_dir:                str
+
+    :param kernel_distance_meters:              Kernel distance to search for nearby suitability. This gets overridden
+                                                when running LHS.
+    :type kernel_distance_meters:               float
+
+    :param scenario:                            Scenario name
+    :type scenario:                             str
+
+    :param lhs_array_file:                      Full path with file name and extension to the LHS array NPY file. If
+                                                none is provide, the default 1000 samples file will be used.
+    :type lhs_array_file:                       str
+
+    :param lhs_problem_file:                    Full path with file name and extension to the LHS problem dictionary
+                                                pickled file. If none is provide, the default 1000 samples file will be used.
+    :type lhs_problem_file:                     str
+
+    :param sample_id:                           Sample number from the LHS array by index.  If provided, the code will
+                                                assume you are running in LHS mode.
+    :type sample_id:                            int
+
+    :param write_logfile:                       Optionally write log to file
+    :type write_logfile:                        bool
+
+    :param write_raster:                        Optionally export raster output
+    :type write_raster:                         bool
+
+    :param output_total:                        Choice to output total (urban + rural) dataset
+    :type output_total:                         bool
+
+    :param write_array1d:                       Optionally export a Numpy 1D flattened array of only grid cells
+                                                within the target state
+    :type write_array1d:                        bool
+
+    """
+
+    # get a list of all states to process; name all lower case and underscore separated where necessary
+    state_list = utils.get_state_list()
+
+    for target_state in state_list:
+
+        run_validation(target_state=target_state,
+                       historical_year=historical_year,
+                       projection_year=projection_year,
+                       data_dir=data_dir,
+                       simulation_output_dir=simulation_output_dir,
+                       kernel_distance_meters=kernel_distance_meters,
+                       scenario=scenario,
+                       lhs_array_file=lhs_array_file,
+                       lhs_problem_file=lhs_problem_file,
+                       sample_id=sample_id,
+                       write_logfile=write_logfile,
+                       write_raster=write_raster,
+                       output_total=output_total,
+                       write_array1d=write_array1d)
+
+
+def run_simulation(target_state, historical_year, projection_year, data_dir, simulation_output_dir,
+                   kernel_distance_meters=100000, scenario='SSP2', lhs_array_file=None,
+                   lhs_problem_file=None, sample_id='', write_logfile=False, write_raster=False,
+                   output_total=False, write_array1d=False):
+    """Simulation run using the historical year raster as a starting point to downscale the population projection for
+    the projection year.  Population projections are driven by scenario assumption for the SSP being evaluated.
+
+    If running for LHS samples, pass the alpha and beta parameter values and the default parameters will be overridden.
+
+    :param target_state:                        Target state name to run all lower case and underscore separated
+    :type target_state:                         str
+
+    :param historical_year:                     Base year of observed data in YYYY format
+    :type historical_year:                      int
+
+    :param projection_year:                     Projection year from scenario population input data in YYYY format
+    :type projection_year:                      int
+
+    :param data_dir:                            Directory containing the input data from the newly formatted inputs.
+    :type data_dir:                             str
+
+    :param simulation_output_dir:               Output directory to save simulations to
+    :type simulation_output_dir:                str
+
+    :param kernel_distance_meters:              Kernel distance to search for nearby suitability. This gets overridden
+                                                when running LHS.
+    :type kernel_distance_meters:               float
+
+    :param scenario:                            Scenario name
+    :type scenario:                             str
+
+    :param lhs_array_file:                      Full path with file name and extension to the LHS array NPY file. If
+                                                none is provide, the default 1000 samples file will be used.
+    :type lhs_array_file:                       str
+
+    :param lhs_problem_file:                    Full path with file name and extension to the LHS problem dictionary
+                                                pickled file. If none is provide, the default 1000 samples file will be used.
+    :type lhs_problem_file:                     str
+
+    :param sample_id:                           Sample number from the LHS array by index.  If provided, the code will
+                                                assume you are running in LHS mode.
+    :type sample_id:                            int
+
+    :param write_logfile:                       Optionally write log to file
+    :type write_logfile:                        bool
+
+    :param write_raster:                        Optionally export raster output
+    :type write_raster:                         bool
+
+    :param output_total:                        Choice to output total (urban + rural) dataset
+    :type output_total:                         bool
+
+    :param write_array1d:                       Optionally export a Numpy 1D flattened array of only grid cells
+                                                within the target state
+    :type write_array1d:                        bool
+
+    """
+
+    run_model(target_state=target_state,
+              historical_year=historical_year,
+              projection_year=projection_year,
+              data_dir=data_dir,
+              simulation_output_dir=simulation_output_dir,
+              kernel_distance_meters=kernel_distance_meters,
+              scenario=scenario,
+              lhs_array_file=lhs_array_file,
+              lhs_problem_file=lhs_problem_file,
+              sample_id=sample_id,
+              write_logfile=write_logfile,
+              write_raster=write_raster,
+              output_total=output_total,
+              write_array1d=write_array1d)

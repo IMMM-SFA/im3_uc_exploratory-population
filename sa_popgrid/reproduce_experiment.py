@@ -1,5 +1,4 @@
 import os
-import pkg_resources
 
 import numpy as np
 import pandas as pd
@@ -119,7 +118,7 @@ def compare_observed_versus_simulated(target_state, scenario, historical_year, p
     return results
 
 
-def reproduce_experiment(data_dir, simulation_output_dir, base_year, projection_year, scenario, let_fail=False):
+def reproduce_original_experiment(data_dir, simulation_output_dir, base_year, projection_year, scenario, let_fail=False):
     """Reproduce the experiment for a given year using the data archived from the following publication and run
     assertion tests to ensure outputs match to a relative and absolute threshold of 1e-6; the output assertion
     tests are written for each state in the 'assertion.log' file:
