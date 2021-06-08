@@ -118,6 +118,7 @@ def mosaic_all(template_metadata, template_df, raster_list, out_file, nrows, nco
 
 
 class Data:
+    """Prepare data for the population_gravity model."""
 
     def __init__(self, data_dir, state_name, output_dir, target_year):
 

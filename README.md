@@ -1,4 +1,4 @@
-# sa_popgrid
+# Experiement meta-repository for population dynamics sensitivity analysis
 Code and process for conducting sensitivity analysis for the gridded population gravity model on a cluster
 
 ## Getting started with this experiment on a cluster
@@ -10,7 +10,7 @@ The following code was tested on THECUBE cluster courtesy of the Reed Research G
 This code has a GDAL 2.2.3 dependency.  This was installed using the following using the default compiler `gcc 8.3.0`:
 
 ```shell script
-# change directories into your libs dir; make on if it does not exist
+# change directories into your libs dir; make one if it does not exist
 cd ~/libs
 
 # download GDAL
@@ -156,6 +156,8 @@ Zoraghein and O'Neill (2020) used 2010 as the base historical year.  Though the 
 
 The following runs assumes the base year of 2010 and uses the projected data for SSP2 for year 2020, along with it's published parameters, to produce a simulated run with the goal of seeing if we can reproduce the results from the experiement.
 
+**NOTE**:  This function does not submit a job to SLURM.  I ran this locally.
+
 ```python
 import sa_popgrid
 
@@ -176,6 +178,8 @@ sa_popgrid.reproduce_original_experiment(data_dir, simulation_output_dir, base_y
 ### Extending the input data to accommodate a larger kernel distance reach
 The original data was created to only include grid cells from other states when running a target state for 100 km around the border of the target state.  Since we wanted to envelope the kernel distance parameter default setting of 100 km that was used in Zoraghein and O'Neill (2020) by 50 km (50 km to 150 km), we have to rebuild the original data to support this.
 
+**NOTE**:  This function does not submit a job to SLURM.  I ran this locally.
+
 ```python
 import sa_popgrid
 
@@ -194,6 +198,9 @@ sa_popgrid.build_new_data(data_dir, output_dir, target_year_list)
 
 ### Create Latin Hypercube Sample (LHS) and problem dictionary
 The current LHS sample and problem dictionary that has been used for testing is stored within this package and can be accessed using:
+
+**NOTE**:  This function does not submit a job to SLURM.  I ran this locally.
+
 
 ```python
 import pkg_resources
@@ -263,6 +270,7 @@ np.save('<my path to write my file.npy to>', lhs_arr)
 
 Year 2000 was used as the base year to calibrate to year 2010 observed data.  We want to recreate the validation.
 
+**NOTE**:  This function does not submit a job to SLURM.  I ran this locally.
 
 ```python
 import sa_popgrid
