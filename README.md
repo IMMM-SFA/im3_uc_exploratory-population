@@ -56,23 +56,30 @@ python3 -m venv pyenv
 
 In this case `pyenv` is simply the name I have chosen for my virutal environemnt.
 
-### STEP 3:  Install the `sa_popgrid` package and the Required Python Modules
-First activate your Python virtual environment by running:
-```shell script
+### STEP 3:  Install the `population_gravity` and `sa_popgrid` packages and the required Python modules in your virtual environment
+1.  Activate your Python virtual environment by running:
+```bash
 source pyenv/bin/activate
 ```
 
-Then install the `sa_popgrid` package from GitHub:
-```shell script
-pip install git+https://github.com/IMMM-SFA/sa_popgrid.git
+2. Install the `population_gravity` Python package from GitHub:
+```bash
+python -m pip install git+https://github.com/IMMM-SFA/https://github.com/IMMM-SFA/population_gravity.git
 ```
 
-Confirm that the package installed correctly by first entering a Python prompt:
-```shell script
+
+3. Install the `sa_popgrid` Python package from GitHub:
+```bash
+python -m pip install git+https://github.com/IMMM-SFA/sa_popgrid.git
+```
+
+4. Confirm that the packages installed correctly by first entering a Python prompt:
+```bash
 python
 ```
 and then executing:
 ```python
+import population_gravity
 import sa_popgrid
 ```
 If no errors return then all is well.  Exit the Python prompt by excuting:
@@ -80,116 +87,257 @@ If no errors return then all is well.  Exit the Python prompt by excuting:
 exit()
 ```
 
-### STEP 4:  Build the Latin Hypercube Sample and Problem Dictionary
+You can use the following to generate information on a function within the package after install:
 
-Create a script named:  `generate_lhs_sample_1000.py` that contains:
 ```python
-# This script generates a sample set of 1000 using LHS 
-#
-# To run:  
-# 1.  Activate your Python virtual environment containing the `sa_popgrid` package
-# 2.  Execute this script by running:  `python generate_lhs_sample_1000.py`
-
 import sa_popgrid
 
-# where to write the job script
-output_job_script = '/home/fs02/pmr82_0001/spec994/projects/population/code/lhs_delta'
-
-# run only one sample
-sample_list = 1000
-
-# directory to store the output files in
-output_dir = '/home/fs02/pmr82_0001/spec994/projects/population/outputs/lhs'
-
-# my Python virtual environemnt
-venv_dir = '/home/fs02/pmr82_0001/spec994/pyenv'
-
-# submit the SLURM job
-sa_popgrid.run_lhs(output_job_script,
-                    sample_list,
-                    output_dir,
-                    venv_dir,
-                    alpha_urban_upper=2.0,
-                    alpha_urban_lower=-2.0,
-                    alpha_rural_upper=2.0,
-                    alpha_rural_lower=-2.0,
-                    beta_urban_upper=2.0,
-                    beta_urban_lower=-0.5,
-                    beta_rural_upper=2.0,
-                    beta_rural_lower=-0.5,
-                    kernel_density_lower=50000,
-                    kernel_density_upper=150000,
-                    walltime='00:10:00')
+help(sa_popgrid.reproduce_experiment)
 ```
 
-Run this using the following command after your Python virtual environment has been loaded:
-```python
-python generate_lhs_sample_1000.py
+which will render:
+
+```
+reproduce_experiment(data_dir, simulation_output_dir, base_year, projection_year, scenario, let_fail=False)
+    Reproduce the experiment for a given year using the data archived from the following publication and run
+    assertion tests to ensure outputs match to a relative and absolute threshold of 1e-6; the output assertion
+    tests are written for each state in the 'assertion.log' file:
+
+    Zoraghein, H., & O’Neill, B. C. (2020). US State-level Projections of the Spatial Distribution of Population
+    Consistent with Shared Socioeconomic Pathways. Sustainability, 12(8), 3374. https://doi.org/10.3390/su12083374
+
+    This data can be downloaded from here:
+
+    Zoraghein, H., & O'Neill, B. (2020). Data Supplement: U.S. state-level projections of the spatial distribution of
+    population consistent with Shared Socioeconomic Pathways. (Version v0.1.0) [Data set].
+    Zenodo. http://doi.org/10.5281/zenodo.3756179
+
+    :param data_dir:                            Full path to the directory of the downloaded data from the publication
+    :type data_dir:                             str
+
+    :param simulation_output_dir:               Full path to the directory where you want to write the simulation results
+    :type simulation_output_dir:                str
+
+    :param base_year:                           Base year for the simulation
+    :type base_year:                            int
+
+    :param projection_year:                     Projection year for which future population data is available for the
+                                                given scenario
 ```
 
-### STEP 5:  Run model batch runs for each sample, ssp, state, and year
+## Reproduce my experiement
 
-Create a script named:  `run_batch.py` that contains:
+### Originally published data
+The population gravity model that downscaled U.S. state-level projections of population to a 1km grid over for the U.S. was originally published in the following:
+
+>Zoraghein, H., & O’Neill, B. C. (2020). US State-level Projections of the Spatial Distribution of Population Consistent with Shared Socioeconomic Pathways. Sustainability, 12(8), 3374. https://doi.org/10.3390/su12083374
+
+The input and output data used in this publication can be found here:
+
+>Zoraghein, H., & O'Neill, B. (2020). Data Supplement: U.S. state-level projections of the spatial distribution of population consistent with Shared Socioeconomic Pathways. (Version v0.1.0) [Data set]. Zenodo. http://doi.org/10.5281/zenodo.3756179
+
+State-level population projections were described in this publication:
+
+>Jiang, L., B.C. O'Neill, H. Zoraghein, and S. Dahlke. 2020. Population scenarios for U.S. states consistent with Shared Socioeconomic Pathways. Environmental Research Letters, https://doi.org/10.1088/1748-9326/aba5b1.
+
+The data produced in Jiang et al. (2020) can be downloaded from here:
+
+>Jiang, L., Dahlke, S., Zoraghein, H., & O'Neill, B.C. (2020). Population scenarios for U.S. states consistent with Shared Socioeconomic Pathways (Version v0.1.0) [Data set]. Zenodo. http://doi.org/10.5281/zenodo.3956412
+
+and the state-level model code used in that publication can be found here:
+
+>Zoraghein, H., R. Nawrotzki, L. Jiang, and S. Dahlke (2020). IMMM-SFA/statepop: v0.1.0 (Version v0.1.0). Zenodo. http://doi.org/10.5281/zenodo.3956703
+
+### Download the original data
+Download and unzip the inputs and outputs as archived in Zoraghein and O'Neill (2020) from the following Zenodo archive:  [zoraghein-oneill_population_gravity_inputs_outputs.zip](https://zenodo.org/record/3756179/files/zoraghein-oneill_population_gravity_inputs_outputs.zip?download=1)
+
+### Reproduce the original experiment for year 2020
+Zoraghein and O'Neill (2020) used 2010 as the base historical year.  Though the population projection files include 2010 as a projected year for each SSP.  The projected 2010 should not be confused with the actual observed population data in 2010; they are different.
+
+The following runs assumes the base year of 2010 and uses the projected data for SSP2 for year 2020, along with it's published parameters, to produce a simulated run with the goal of seeing if we can reproduce the results from the experiement.
+
 ```python
-# This script generates a batch run of all samples for a ssp, state, and year
-#
-# To run:
-# 1.  Activate your Python virtual environment containing the `sa_popgrid` package
-# 2.  Execute this script by running:  `python run_batch.py`
-
 import sa_popgrid
 
-# use the 1000 sample set that has been previously generated
+# directory of the unzipped data from Zenodo
+data_dir = '<your directory>/zoraghein-oneill_population_gravity_inputs_outputs'
+
+# directory to write the outputs to for this run
+simulation_output_dir = '<your target directory>'
+
+# use 2010 as the base year and 2020 as the first projection year
+base_year = 2010
+projection_year = 2020
+scenario = 'SSP2'
+
+sa_popgrid.reproduce_experiment(data_dir, simulation_output_dir, base_year, projection_year, scenario, let_fail=False)
+```
+
+### Extending the input data to accommodate a larger kernel distance reach
+The original data was created to only include grid cells from other states when running a target state for 100 km around the border of the target state.  Since we wanted to envelope the kernel distance parameter default setting of 100 km that was used in Zoraghein and O'Neill (2020) by 50 km (50 km to 150 km), we have to rebuild the original data to support this.
+
+```python
+import sa_popgrid
+
+# directory of the unzipped data from Zenodo
+data_dir = '<your directory>/zoraghein-oneill_population_gravity_inputs_outputs'
+
+# directory that will hold the newly modified inputs.
+output_dir = '<your output directory>'
+
+# list of years as 4-digit integers to process
+target_year_list = [2000, 2010]
+
+sa_popgrid.build_new_data(data_dir, output_dir, target_year_list)
+```
+
+### Validation: Running a simulation using year 2000 as the observed data to simulate year 2010 observed data using published parameter values.  
+
+Year 2000 was used as the base year to calibrate to year 2010 observed data.  We want to recreate the validation.
+
+
+```python
+import sa_popgrid
+
+# your directory to the newly modified inputs
+data_dir = '<your directory that holds the newly modified inputs>'
+
+simulation_output_dir = '<directory to write the outputs to>'
+
+historical_year = 2000
+projection_year = 2010
+
+# run for all states
+sa_popgrid.run_validation_allstates(historical_year, projection_year, data_dir, simulation_output_dir)
+
+# HINT:  You can also run for a single state using the following...
+sa_popgrid.run_validation(target_state='<my target state>', historical_year, projection_year, data_dir, simulation_output_dir)
+```
+
+### Create Latin Hypercube Sample (LHS) and problem dictionary
+The current LHS sample and problem dictionary that has been used for testing is stored within this package and can be accessed using:
+
+```python
+import pkg_resources
+import pickle
+
+import numpy as np
+
+# get file paths
+lhs_array_file = pkg_resources.resource_filename('sa_popgrid', 'data/lhs_1000_sample.npy')
+lhs_problem_dict_file = pkg_resources.resource_filename('sa_popgrid', 'data/lhs_1000_problem_dict.p')
+
+# load files
+lhs_array = np.load(lhs_array_file)
+
+with open(lhs_problem_dict_file, "rb") as prob:
+    lhs_problem_dict = pickle.load(prob)
+
+```
+
+These represent 1000 samples for the following bounds and parameters:
+
+```
+{'num_vars': 5,
+ 'names': ['alpha_urban',
+  'alpha_rural',
+  'beta_urban',
+  'beta_rural',
+  'kernel_distance_meters'],
+ 'bounds': [[-4, 4], [-4, 4], [-4, 4], [-4, 4], [50000, 150000]]}
+ ```
+
+The LHS array and problem dictionary can be generated and written to files using SALib like the following:
+
+```python
+import pickle
+
+import numpy as np
+
+from SALib.sample import latin
+
 n_samples = 1000
 
-# last year to process
-end_yr = 2020
+# create your problem dictionary
+problem = {'num_vars': 5,
+             'names': ['alpha_urban',
+              'alpha_rural',
+              'beta_urban',
+              'beta_rural',
+              'kernel_distance_meters'],
+             'bounds': [[-4, 4], [-4, 4], [-4, 4], [-4, 4], [50000, 150000]]}
 
-# name of target state all lower case and connected with an underscore
-state_name = 'new_york'
+# create your LHS array
+lhs_arr = latin.sample(problem, n_samples)
 
-# shared socioeconomic pathway all upper case no spaces
-ssp = 'SSP2'
+# write problem dictionary as a pickled file
+with open('<my path to write my file.p to>', 'wb') as prob:
+    pickle.dump(problem, prob)
 
-# where to write the job script
-output_job_script = f'/home/fs02/pmr82_0001/spec994/projects/population/code/lhs_delta/batch_lhs_ssp-{ssp}_state-{state_name}_yr-{end_yr}_sample-{n_samples}.sh'
-
-# directory containing the input data for the population_gravity model
-input_directory = f'/home/fs02/pmr82_0001/spec994/projects/population/incoming/zoraghein-oneill_population_gravity_inputs_outputs/{state_name}/inputs'
-
-# directory containing the LHS sample and problem dictionary
-sample_directory = '/home/fs02/pmr82_0001/spec994/projects/population/outputs/lhs'
-
-# directory to store the output files in
-output_directory = '/home/fs02/pmr82_0001/spec994/projects/population/outputs/batch'
-
-# my Python virtual environemnt
-venv_dir = '/home/fs02/pmr82_0001/spec994/pyenv'
-
-# submit the SLURM job
-sa_popgrid.run_batch(output_job_script,
-                        n_samples,
-                        input_directory,
-                        sample_directory,
-                        output_directory,
-                        end_yr,
-                        state_name,
-                        ssp,
-                        venv_dir,
-                        walltime='01:00:00',
-                        max_jobs=15)
+# save array as npy file
+np.save('<my path to write my file.npy to>', lhs_arr)
 ```
 
-Run this using the following command after your Python virtual environment has been loaded:
-```python
-run_batch.py
-```
+### Run LHS runs using the observed year of 2000 as the base historical year and 2010 as the validation year for all 1000 LHS samples.  This will assume the projected population to be what is in the 2010 observed data and NOT what is in the SSPs.  
 
-### STEP 6:  Run SA
+We do this step to evaluate the influence of varying parameter values on our validation data.
+
+**NOTE:** The following is meant to run on a cluster that utilizes the SLURM to schedule jobs.
 
 ```python
+import sa_popgrid
 
+
+output_script_dir = '<the path to the directory that my SLURM scripts will be written to>'
+
+# the number of samples in your sample array
+n_samples = 1000
+
+# your directory to the newly modified inputs
+data_dir = '<your directory that holds the newly modified inputs>'
+
+# directory to write the outputs to
+simulation_output_dir = '<your output dir>'
+
+# directory to write the SLURM out log files to
+slurm_out_dir = '<your output dir>'
+
+# directory of my Python virtual environment
+venv_dir = '/my/env'
+
+# year to use as the historical reference data (e.g., observed data or previous year)
+hist_yr = 2000
+
+# validation or projection year
+proj_yr = 2010
+
+# state name to process as all lower case with underscore separators
+state_name = '<my_target_state_name>'
+
+# using validation as the scenario name
+scenario = 'validation'
+
+# see help for additional option explanations
+sa_popgrid.submit_slurm_array(output_script_dir,
+                               n_samples, data_dir,
+                               simulation_output_dir,
+                               slurm_out_dir,
+                               venv_dir,
+                               hist_yr,
+                               proj_yr,
+                               state_name,
+                               scenario,
+                               walltime='04:00:00',
+                               submit_job=True,
+                               partition='normal',
+                               account_name='',
+                               max_jobs=10,
+                               method='validation',
+                               lhs_array_file=None,
+                               lhs_problem_file=None,
+                               write_raster=False,
+                               output_total=False,
+                               write_array1d=True)
 ```
 
-
-
+**NOTE:** I chose to write the outputs as 1D arrays (.npy files) that only write out the valid grid cell values for the target state.  This greatly improves storage size.  The arrays can then be converted to CSV file containing the following fields using the `convert_1d_array_to_csv()` function:  [Xcoord, Ycoord, FID, n], where "XCoord" is the X coordinate value, "YCoord" is the Y coordinate value, "FID" is the index of the grid cell when flattened to a 1D array, and "n" is the population output from the run.
