@@ -1,3 +1,6 @@
+[![DOI](https://zenodo.org/badge/291055330.svg)](https://zenodo.org/badge/latestdoi/291055330)
+
+
 # Experiement meta-repository for population dynamics sensitivity analysis
 Code and process for conducting sensitivity analysis for the gridded population gravity model on a cluster
 
