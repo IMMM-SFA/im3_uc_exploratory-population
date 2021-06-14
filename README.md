@@ -64,13 +64,14 @@ source pyenv/bin/activate
 
 2. Install the `population_gravity` Python package from GitHub:
 ```bash
-python -m pip install git+https://github.com/IMMM-SFA/https://github.com/IMMM-SFA/population_gravity.git
+python -m pip install -e git://github.com/IMMM-SFA/population_gravity.git@main#egg=population_gravity
+
 ```
 
 
 3. Install the `sa_popgrid` Python package from GitHub:
 ```bash
-python -m pip install git+https://github.com/IMMM-SFA/sa_popgrid.git
+python -m pip install -e git://github.com/IMMM-SFA/sa_popgrid.git@main#egg=sa_popgrid
 ```
 
 4. Confirm that the packages installed correctly by first entering a Python prompt:
