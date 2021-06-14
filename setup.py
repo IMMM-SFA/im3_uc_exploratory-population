@@ -14,7 +14,7 @@ setup(
     install_requires=[
         'rasterio~=1.2.3',
         'simplejson~=3.17.0',
-        'numpy~=1.20.3',
+        'numpy~=1.19.5',
         'pandas~=1.2.4',
         'xarray~=0.18.2',
     ],
