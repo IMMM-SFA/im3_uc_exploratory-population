@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='sa_popgrid',
-    version='0.1.0',
+    version='0.1.1',
     packages=find_packages(),
     url='https://github.com/IMMM-SFA/sa_popgrid.git',
     license='BSD 2-Clause',
