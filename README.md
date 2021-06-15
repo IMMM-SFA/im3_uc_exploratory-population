@@ -74,7 +74,8 @@ python -m pip install -e git://github.com/IMMM-SFA/population_gravity.git@main#e
 
 3. Install the `sa_popgrid` Python package from GitHub:
 ```bash
-python -m pip install -e git://github.com/IMMM-SFA/sa_popgrid.git@main#egg=sa_popgrid
+python -m pip install -e git://github.com/IMMM-SFA/im3_uc_exploratory-population.git@main#egg=sa_popgrid
+
 ```
 
 4. Confirm that the packages installed correctly by first entering a Python prompt:
@@ -357,7 +358,7 @@ sa_popgrid.submit_slurm_array(output_script_dir=output_script_dir,
                                write_array1d=True)
 ```
 
-**NOTE:** I chose to write the outputs as 1D arrays (.npy files) that only write out the valid grid cell values for the target state.  This greatly improves storage size.  The arrays can then be converted to CSV file containing the following fields using the `convert_1d_array_to_csv()` function:  [Xcoord, Ycoord, FID, n], where "XCoord" is the X coordinate value, "YCoord" is the Y coordinate value, "FID" is the index of the grid cell when flattened to a 1D array, and "n" is the population output from the run.
+**NOTE:** I chose to write the outputs as 1D arrays (.npy files) that only write out the valid grid cell values for the target state.  This greatly improves storage size.  The arrays can then be converted to CSV file containing the following fields using the `convert_1d_array_to_csv()` function:  [Xcoord, Ycoord, FID, n], where "XCoord" is the X coordinate value, "YCoord" is the Y coordinate value, "FID" is the index of the grid cell when flattened to a 1D array, and "n" is the population output from the run. Or you can convert them back into a 2D array using `convert_1d_to_2d_array` and then write the outputs to a raster using `array_to_raster`.
 
 ### Future simulation
 
