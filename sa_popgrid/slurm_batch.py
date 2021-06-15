@@ -121,7 +121,7 @@ def submit_slurm_array(output_script_dir, data_dir, simulation_output_dir, slurm
 #SBATCH --nodes=1
 #SBATCH --time={walltime}
 #SBATCH --job-name={jobname}
-#SBATCH --output={slurm_out_dir}/batch_{scenario}_{state_name}_{hist_yr}to{proj_yr}_sample-{sample_index}_job%a.out
+#SBATCH --output={slurm_out_dir}/batch_{scenario}_{state_name}_{hist_yr}to{proj_yr}_job%a.out
 {account}
 
 # README -----------------------------------------------------------------------
