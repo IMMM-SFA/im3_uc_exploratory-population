@@ -117,3 +117,77 @@ def convert_1d_array_to_csv(coordinate_file, indices_file, run_1d_array_file, ou
     df_merge.to_csv(output_csv, index=False)
 
     return df_merge
+
+
+def convert_1d_to_2d_array(run_1d_array_file, indices_file, template_raster_file):
+    """Convert a 1-dimension array of valid grid cells for a target state to a 2-dimension array containing to full extent.
+
+    :param indices_file:                        Full path with file name and extension to the input indicies file
+                                                containing a list of index values that represent grid cells that fall
+                                                inside the state boundary. These index values are used to extract grid
+                                                cell values from rasters that have been read to a 2D array and then
+                                                flattened to 1D; where they still contain out-of-bounds-data.  File name
+                                                is generally:  <state_name>_within_indices.txt
+    :type indices_file:                         str
+
+    :param run_1d_array_file:                   Full path with file name and extension to a 1D array generated from
+                                                a run output.  This array contains only grid cell values that fall
+                                                within the boundary of the target state.  File name is generally:
+                                                <state_name>_1km_<scenario>_<setting>_<year>_1d.npy; where `scenario` is
+                                                the SSP and `setting` in either "rural", "urban", or "total"
+    :type run_1d_array_file:                    str
+
+    :param template_raster_file:                Full path with file name and extension to a template raster file to use
+                                                as a template. This file should be from the same source by which the
+                                                1D run array was created.
+    :type template_raster_file:                 str
+
+    :return:                                    2D array
+
+    """
+
+    # load 1d array
+    run_arr_1d = np.load(run_1d_array_file)
+
+    # read in within_indices file
+    with open(indices_file, 'r') as rn:
+        indices_list = simplejson.load(rn)
+
+    # read in template raster file
+    with rasterio.open(template_raster_file) as src:
+        template_arr_2d = src.read(1)
+        template_arr_1d = template_arr_2d.flatten()
+
+    # set template array values to nan
+    template_arr_1d[:] = np.nan
+
+    # replace template values with values from run
+    template_arr_1d[indices_list] = run_arr_1d
+
+    # reshape template to two dimensions
+    return template_arr_1d.reshape(template_arr_2d.shape)
+
+
+def array_to_raster(arr, template_raster_file, output_raster_file):
+    """Write a raster file from a 2D array.
+
+    :param arr:                                 2D NumPy array matching the shape of the template raster
+    :type arr:                                  ndarray
+
+    :param template_raster_file:                Full path with file name and extension to a template raster file to use
+                                                as a template. This file should be from the same source by which the
+                                                1D run array was created.
+    :type template_raster_file:                 str
+
+    :param output_raster_file:                  Full path with file name and extension to write the output raster file
+                                                to.
+    :type output_raster_file:                   str
+
+    """
+
+    # read in template raster file
+    with rasterio.open(template_raster_file) as src:
+        metadata = src.meta.copy()
+
+        with rasterio.open(output_raster_file, 'w', **metadata) as out:
+            out.write(arr, 1)
