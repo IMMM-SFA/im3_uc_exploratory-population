@@ -157,7 +157,6 @@ def convert_1d_to_2d_array(run_1d_array_file, indices_file, template_raster_file
     with rasterio.open(template_raster_file) as src:
         template_arr_2d = src.read(1)
         template_arr_1d = template_arr_2d.flatten()
-        metadata = src.meta.copy()
 
     # set template array values to nan
     template_arr_1d[:] = np.nan
@@ -169,3 +168,26 @@ def convert_1d_to_2d_array(run_1d_array_file, indices_file, template_raster_file
     return template_arr_1d.reshape(template_arr_2d.shape)
 
 
+def array_to_raster(arr, template_raster_file, output_raster_file):
+    """Write a raster file from a 2D array.
+
+    :param arr:                                 2D NumPy array matching the shape of the template raster
+    :type arr:                                  ndarray
+
+    :param template_raster_file:                Full path with file name and extension to a template raster file to use
+                                                as a template. This file should be from the same source by which the
+                                                1D run array was created.
+    :type template_raster_file:                 str
+
+    :param output_raster_file:                  Full path with file name and extension to write the output raster file
+                                                to.
+    :type output_raster_file:                   str
+
+    """
+
+    # read in template raster file
+    with rasterio.open(template_raster_file) as src:
+        metadata = src.meta.copy()
+
+        with rasterio.open(output_raster_file, 'w', **metadata) as out:
+            out.write(arr, 1)
