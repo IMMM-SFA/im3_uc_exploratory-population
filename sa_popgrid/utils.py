@@ -112,7 +112,7 @@ def convert_1d_array_to_csv(coordinate_file, indices_file, run_1d_array_file, ou
         df_merge.fillna(nodata, inplace=True)
 
     # save as CSV
-    fname = f"{'_'.join(os.path.splitext(os.path.basename(f))[0].split('_')[:-1])}.csv"
+    fname = f"{'_'.join(os.path.splitext(os.path.basename(run_1d_array_file))[0].split('_')[:-1])}.csv"
     output_csv = os.path.join(output_dir, fname)
     df_merge.to_csv(output_csv, index=False)
 
