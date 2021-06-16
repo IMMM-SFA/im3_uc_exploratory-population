@@ -1,8 +1,8 @@
 [![DOI](https://zenodo.org/badge/291055330.svg)](https://zenodo.org/badge/latestdoi/291055330)
 
 
-# Experiement meta-repository for population dynamics sensitivity analysis
-Code and process for conducting sensitivity analysis for the gridded population gravity model on a cluster
+# IM3 experiement meta-repository for exploratory population modeling
+Code and process for conducting sensitivity analysis, precalibration, and uncertainty characterization related to exploratory population modeling
 
 ## Getting started with this experiment on a cluster
 
@@ -336,7 +336,7 @@ scenario = 'validation'
 
 # see help for additional option explanations
 sa_popgrid.submit_slurm_array(output_script_dir=output_script_dir,
-                               n_samples=n_samples, 
+                               n_samples=n_samples,
                                data_dir=data_dir,
                                simulation_output_dir=simulation_output_dir,
                                slurm_out_dir=slurm_out_dir,
@@ -401,7 +401,7 @@ scenario = 'SSP2'
 
 # see help for additional option explanations
 sa_popgrid.submit_slurm_array(output_script_dir=output_script_dir,
-                               n_samples=n_samples, 
+                               n_samples=n_samples,
                                data_dir=data_dir,
                                simulation_output_dir=simulation_output_dir,
                                slurm_out_dir=slurm_out_dir,
